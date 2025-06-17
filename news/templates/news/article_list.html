@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список статей</title>
+</head>
+<body>
+    <h1>Список статей</h1>
+    <ul>
+        {% for article in articles %}
+            <li>
+                <h2>{{ article.title }}</h2>
+                <p>{{ article.preview }}</p>
+                <p>Лайки: {{ article.rating }}</p>
+                <p>Дизлайки: {{ article.rating|add:-1 }}</p>  <!-- Предполагается, что дизлайки - это просто пример -->
+                <a href="{% url 'add_comment' article.id %}">Добавить комментарий</a>
+                <h3>Комментарии:</h3>
+                <ul>
+                    {% for comment in article.comments.all %}
+                        <li>{{ comment.text }} (Лайки: {{ comment.rating }})</li>
+                    {% empty %}
+                        <li>Нет комментариев</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
