@@ -17,7 +17,7 @@ def add_comment(request, post_id):
         if text:
             comment = Comment.objects.create(post=post, user=request.user, text=text)
             comment.save()
-            messages.success(request, 'Комментарий добавлен успешно!')
+            messages.success(request,'Комментарий добавлен успешно!')
         else:
-            messages.error(request, 'Комментарий не может быть пустым.')
+            messages.error(request,'Комментарий не может быть пустым.')
         return redirect('article_list')
