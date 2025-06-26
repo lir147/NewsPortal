@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load censor_tags %}
+
+{% block content %}
+  <h1>{{ item.title|censor }}</h1>
+  <p><em>Дата публикации: {{ item.pub_date|date:"d.m.Y" }}</em></p>
+  <div>{{ item.text|censor }}</div>
+  <p><a href="{% url 'news_list' %}">К списку новостей</a></p>
+{% endblock %}
