@@ -1,0 +1,35 @@
+<h1>Поиск новостей</h1>
+
+<form method="get">
+    {{ filter.form.as_p }}
+    <button type="submit">Искать</button>
+</form>
+
+<ul>
+  {% for news in filter.qs %}
+    <li>{{ news.title }} — {{ news.author.username }} — {{ news.created_at }}</li>
+  {% empty %}
+    <li>Ничего не найдено</li>
+  {% endfor %}
+</ul>
+
+{# Если настроена пагинация #}
+<div class="pagination">
+    {% if filter.page_obj.has_previous %}
+        <a href="?{% querystring filter.form data 'page'=1 %}">&laquo; Первая</a>
+        <a href="?{% querystring filter.form data 'page'=filter.page_obj.previous_page_number %}">&lsaquo; Назад</a>
+    {% else %}
+        <span>&laquo; Первая</span>
+        <span>&lsaquo; Назад</span>
+    {% endif %}
+
+    {# Можно добавить номера страниц тут, аналогично выше #}
+
+    {% if filter.page_obj.has_next %}
+        <a href="?{% querystring filter.form data 'page'=filter.page_obj.next_page_number %}">Вперёд &rsaquo;</a>
+        <a href="?{% querystring filter.form data 'page'=filter.paginator.num_pages %}">Последняя &raquo;</a>
+    {% else %}
+        <span>Вперёд &rsaquo;</span>
+        <span>Последняя &raquo;</span>
+    {% endif %}
+</div>

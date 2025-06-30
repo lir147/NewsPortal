@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'NewsSite',
     'news',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
