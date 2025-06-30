@@ -1,5 +1,4 @@
 <h1>Поиск новостей</h1>
-
 <form method="get">
     {{ filter.form.as_p }}
     <button type="submit">Искать</button>
@@ -13,21 +12,20 @@
   {% endfor %}
 </ul>
 
-{# Если настроена пагинация #}
 <div class="pagination">
     {% if filter.page_obj.has_previous %}
-        <a href="?{% querystring filter.form data 'page'=1 %}">&laquo; Первая</a>
-        <a href="?{% querystring filter.form data 'page'=filter.page_obj.previous_page_number %}">&lsaquo; Назад</a>
+        <a href="?page=1{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">&laquo; Первая</a>
+        <a href="?page={{ filter.page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">&lsaquo; Назад</a>
     {% else %}
         <span>&laquo; Первая</span>
         <span>&lsaquo; Назад</span>
     {% endif %}
 
-    {# Можно добавить номера страниц тут, аналогично выше #}
+    {# Здесь можно добавить номера страниц, если хотите #}
 
     {% if filter.page_obj.has_next %}
-        <a href="?{% querystring filter.form data 'page'=filter.page_obj.next_page_number %}">Вперёд &rsaquo;</a>
-        <a href="?{% querystring filter.form data 'page'=filter.paginator.num_pages %}">Последняя &raquo;</a>
+        <a href="?page={{ filter.page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Вперёд &rsaquo;</a>
+        <a href="?page={{ filter.paginator.num_pages }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Последняя &raquo;</a>
     {% else %}
         <span>Вперёд &rsaquo;</span>
         <span>Последняя &raquo;</span>

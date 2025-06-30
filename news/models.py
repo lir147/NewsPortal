@@ -16,11 +16,12 @@ class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
 class Post(models.Model):
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     POST_TYPE_CHOICES = [
         ('article', 'Статья'),
         ('news', 'Новость'),
     ]
+
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post_type = models.CharField(max_length=10, choices=POST_TYPE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     categories = models.ManyToManyField(Category, through='PostCategory')
@@ -44,7 +45,7 @@ class PostCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -57,11 +58,3 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
-
-class News(models.Model):
-    title = models.CharField(max_length=200)
-    pub_date = models.DateTimeField()
-    text = models.TextField()
-
-    def __str__(self):
-        return self.title

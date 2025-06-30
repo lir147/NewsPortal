@@ -1,115 +1,105 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django_filters.views import FilterView
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-import django_filters
-from django import forms
-from .models import News, Post, Comment
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django_filters.views import FilterView
+from django import forms
+import django_filters
+from .models import Post, Comment
 
-class NewsFilter(django_filters.FilterSet):
-    title = django_filters.CharFilter(field_name='title', lookup_expr='icontains', label='Название')
-    author__username = django_filters.CharFilter(field_name='author__username', lookup_expr='icontains', label='Имя автора')
-    pub_date = django_filters.DateFilter(field_name='pub_date', lookup_expr='gte', label='Дата позже',
-                                        widget=forms.DateInput(attrs={'type': 'date'}))
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        exclude = ['post_type', 'created_at']
+
+
+class PostFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(lookup_expr='icontains', label='Название')
+    author__user__username = django_filters.CharFilter(field_name='author__user__username', lookup_expr='icontains', label='Автор')
+    created_at = django_filters.DateFilter(field_name='created_at', lookup_expr='gte', label='После даты', widget=forms.DateInput(attrs={'type':'date'}))
 
     class Meta:
-        model = News
-        fields = ['title', 'author__username', 'pub_date']
+        model = Post
+        fields = ['title', 'author__user__username', 'created_at']
 
 
-class NewsSearchView(FilterView):
-    model = News
-    template_name = 'news/news_search.html'
-    context_object_name = 'filter'
-    filterset_class = NewsFilter
+class NewsListView(ListView):
+    model = Post
+    template_name = 'news/default.html'
+    context_object_name = 'news_list'
     paginate_by = 10
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.order_by('-pub_date')
+        return Post.objects.filter(post_type='news').order_by('-created_at')
 
+# Поиск новостей
+class NewsSearchView(FilterView):
+    model = Post
+    filterset_class = PostFilter
+    template_name = 'news/news_search.html'
+    paginate_by = 10
+    context_object_name = 'filter'
 
-class NewsForm(forms.ModelForm):
-    class Meta:
-        model = News
-        exclude = ['pub_date']
+    def get_queryset(self):
+        return Post.objects.filter(post_type='news').order_by('-created_at')
 
 
 class NewsCreateView(CreateView):
-    model = News
-    form_class = NewsForm
+    model = Post
+    form_class = PostForm
     template_name = 'news/news_form.html'
-    success_url = '/news/'
+    success_url = reverse_lazy('news_list')
 
     def form_valid(self, form):
-        form.instance.pub_date = timezone.now()
+        form.instance.post_type = 'news'
+        form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
+
 class NewsUpdateView(UpdateView):
-    model = News
-    form_class = NewsForm
+    model = Post
+    form_class = PostForm
     template_name = 'news/news_form.html'
-    success_url = '/news/'
+    success_url = reverse_lazy('news_list')
 
+    def get_queryset(self):
+        return Post.objects.filter(post_type='news')
+
+# Удаление новости
 class NewsDeleteView(DeleteView):
-    model = News
+    model = Post
     template_name = 'news/news_confirm_delete.html'
-    success_url = '/news/'
+    success_url = reverse_lazy('news_list')
 
-@login_required
-def add_comment(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if request.method == 'POST':
-        text = request.POST.get('text')
-        if text:
-            comment = Comment.objects.create(post=post, user=request.user, text=text)
-            comment.save()
-            messages.success(request, 'Комментарий добавлен успешно!')
-        else:
-            messages.error(request, 'Комментарий не может быть пустым.')
-    return redirect('article_list')
+    def get_queryset(self):
+        return Post.objects.filter(post_type='news')
 
-def news_detail(request, news_id):
-    news_item = get_object_or_404(News, pk=news_id)
-    context = {
-        'item': news_item
-    }
-    return render(request, 'news/news_detail.html', context)
+# Аналогично для статей
 
-class ArticleListView(ListView):
-    model = News  # или Post, зависит от структуры
-    template_name = 'news/news_list.html'
-    context_object_name = 'news'
-    ordering = ['-pub_date']
-
-class NewsListView(ListView):
-    model = News
-    template_name = 'news/default.html'
-    context_object_name = 'page_obj'
+class ArticlesListView(ListView):
+    model = Post
+    template_name = 'articles/articles_list.html'
+    context_object_name = 'articles_list'
     paginate_by = 10
-    ordering = ['-pub_date']
 
-class ArticleForm(forms.ModelForm):
-    class Meta:
-        model = Post  # или отдельно модель Статья, если есть
-        exclude = ['post_type', 'pub_date']  # например, если есть
+    def get_queryset(self):
+        return Post.objects.filter(post_type='article').order_by('-created_at')
 
 class ArticleCreateView(CreateView):
-    model = Post  # или отдельная модель Article
-    form_class = ArticleForm
+    model = Post
+    form_class = PostForm
     template_name = 'articles/article_form.html'
-    success_url = reverse_lazy('articles_list')  # замените на нужный URL
+    success_url = reverse_lazy('articles_list')
 
     def form_valid(self, form):
-        form.instance.post_type = 'article'  # если используете такое поле для разделения
+        form.instance.post_type = 'article'
+        form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
 class ArticleUpdateView(UpdateView):
     model = Post
-    form_class = ArticleForm
+    form_class = PostForm
     template_name = 'articles/article_form.html'
     success_url = reverse_lazy('articles_list')
 
