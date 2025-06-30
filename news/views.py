@@ -55,14 +55,13 @@ class NewsListView(ListView):
 
 class NewsSearchView(FilterView):
     model = Post
+    filterset_class = PostFilter
     template_name = 'news/news_search.html'
     context_object_name = 'filter'
-    filterset_class = PostFilter
     paginate_by = 10
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(post_type='news').order_by('-created_at')
+        return super().get_queryset().filter(post_type='news').order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
