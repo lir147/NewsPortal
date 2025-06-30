@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 {% load censor_tags %}
-
 {% block content %}
-  <h1>Новости ({{ news|length }})</h1>
+  <h1>Новости ({{ news_list|length }})</h1>
   <ul>
-  {% for item in news %}
+  {% for item in news_list %}
     <li>
-      <a href="{% url 'news_detail' item.id %}">{{ item.title|censor }}</a><br>
-      {{ item.pub_date|date:"d.m.Y" }}<br>
-      {{ item.text|truncatechars:20|censor }}
+      <a href="{% url 'news_detail' item.pk %}">{{ item.title|censor }}</a><br>
+      {{ item.created_at|date:"d.m.Y" }}<br>
+      {{ item.content|truncatechars:20|censor }}
     </li>
   {% empty %}
     <li>Новостей нет.</li>

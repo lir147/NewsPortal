@@ -3,29 +3,40 @@
     {{ filter.form.as_p }}
     <button type="submit">Искать</button>
 </form>
-
 <ul>
   {% for news in filter.qs %}
-    <li>{{ news.title }} — {{ news.author.username }} — {{ news.created_at }}</li>
+    <li>
+      <a href="{% url 'news_detail' news.pk %}">
+        {{ news.title }}
+      </a> — {{ news.author.user.username }} — {{ news.created_at|date:"d.m.Y, H:i" }}
+    </li>
   {% empty %}
     <li>Ничего не найдено</li>
   {% endfor %}
 </ul>
-
 <div class="pagination">
     {% if filter.page_obj.has_previous %}
-        <a href="?page=1{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">&laquo; Первая</a>
-        <a href="?page={{ filter.page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">&lsaquo; Назад</a>
+        <a href="?page=1{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">&laquo; Первая</a>
+        <a href="?page={{ filter.page_obj.previous_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">&lsaquo; Назад</a>
     {% else %}
         <span>&laquo; Первая</span>
         <span>&lsaquo; Назад</span>
     {% endif %}
 
-    {# Здесь можно добавить номера страниц, если хотите #}
+    {# Показать номера страниц около текущей #}
+    {% for num in filter.paginator.page_range %}
+        {% if num >= filter.page_obj.number|add:-2 and num <= filter.page_obj.number|add:2 %}
+            {% if num == filter.page_obj.number %}
+                <strong>{{ num }}</strong>
+            {% else %}
+                <a href="?page={{ num }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
 
     {% if filter.page_obj.has_next %}
-        <a href="?page={{ filter.page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Вперёд &rsaquo;</a>
-        <a href="?page={{ filter.paginator.num_pages }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Последняя &raquo;</a>
+        <a href="?page={{ filter.page_obj.next_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Вперёд &rsaquo;</a>
+        <a href="?page={{ filter.paginator.num_pages }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Последняя &raquo;</a>
     {% else %}
         <span>Вперёд &rsaquo;</span>
         <span>Последняя &raquo;</span>

@@ -9,10 +9,12 @@
     <ul>
         {% for article in articles %}
             <li>
-                <h2>{{ article.title }}</h2>
+                <h2>
+                    <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                </h2>
                 <p>{{ article.preview }}</p>
                 <p>Лайки: {{ article.rating }}</p>
-                <p>Дизлайки: {{ article.rating|add:-1 }}</p>  <!-- Предполагается, что дизлайки - это просто пример -->
+                <p>Дизлайки: {{ article.rating|add:-1 }}</p>
                 <a href="{% url 'add_comment' article.id %}">Добавить комментарий</a>
                 <h3>Комментарии:</h3>
                 <ul>

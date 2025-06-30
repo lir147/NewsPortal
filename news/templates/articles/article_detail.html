@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ article.title }}</h1>
+  <p><strong>Автор:</strong> {{ article.author.user.username }}</p>
+  <p><strong>Дата публикации:</strong> {{ article.created_at|date:"d.m.Y H:i" }}</p>
+  <div>
+    {{ article.content }}
+  </div>
+  <a href="{% url 'articles_list' %}">Назад к списку статей</a>
+{% endblock %}

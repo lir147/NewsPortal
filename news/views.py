@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView,DetailView
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django_filters.views import FilterView
@@ -33,16 +33,21 @@ class NewsListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news').order_by('-created_at')
 
-# Поиск новостей
+
 class NewsSearchView(FilterView):
     model = Post
-    filterset_class = PostFilter
     template_name = 'news/news_search.html'
-    paginate_by = 10
     context_object_name = 'filter'
+    filterset_class = PostFilter
+    paginate_by = 10
 
     def get_queryset(self):
-        return Post.objects.filter(post_type='news').order_by('-created_at')
+        return super().get_queryset().order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['request'] = self.request
+        return context
 
 
 class NewsCreateView(CreateView):
@@ -66,7 +71,7 @@ class NewsUpdateView(UpdateView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
-# Удаление новости
+
 class NewsDeleteView(DeleteView):
     model = Post
     template_name = 'news/news_confirm_delete.html'
@@ -75,7 +80,15 @@ class NewsDeleteView(DeleteView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
-# Аналогично для статей
+class NewsDetailView(DetailView):
+    model = Post
+    template_name = 'news/news_detail.html'
+    context_object_name = 'item'
+
+    def get_queryset(self):
+        return Post.objects.filter(post_type='news')
+
+
 
 class ArticlesListView(ListView):
     model = Post

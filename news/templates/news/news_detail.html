@@ -3,7 +3,7 @@
 
 {% block content %}
   <h1>{{ item.title|censor }}</h1>
-  <p><em>Дата публикации: {{ item.pub_date|date:"d.m.Y" }}</em></p>
-  <div>{{ item.text|censor }}</div>
+  <p><em>Дата публикации: {{ item.created_at|date:"d.m.Y" }}</em></p>  {# changed pub_date → created_at #}
+  <div>{{ item.content|censor }}</div>  {# changed text → content #}
   <p><a href="{% url 'news_list' %}">К списку новостей</a></p>
 {% endblock %}
