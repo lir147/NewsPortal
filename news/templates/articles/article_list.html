@@ -15,7 +15,19 @@
                 <p>{{ article.preview }}</p>
                 <p>Лайки: {{ article.rating }}</p>
                 <p>Дизлайки: {{ article.rating|add:-1 }}</p>
-                <a href="{% url 'add_comment' article.id %}">Добавить комментарий</a>
+
+                <form action="{% url 'article_like' article.pk %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">👍 Лайк</button>
+                </form>
+
+                <form action="{% url 'article_dislike' article.pk %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">👎 Дизлайк</button>
+                </form>
+
+                <p><a href="{% url 'add_comment' article.pk %}">Добавить комментарий</a></p>
+
                 <h3>Комментарии:</h3>
                 <ul>
                     {% for comment in article.comments.all %}
@@ -27,5 +39,34 @@
             </li>
         {% endfor %}
     </ul>
+
+    {# Пагинация #}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">« Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}">‹ Назад</a>
+        {% else %}
+            <span>« Первая</span>
+            <span>‹ Назад</span>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+            {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+                {% if num == page_obj.number %}
+                    <strong>{{ num }}</strong>
+                {% else %}
+                    <a href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Вперёд ›</a>
+            <a href="?page={{ paginator.num_pages }}">Последняя »</a>
+        {% else %}
+            <span>Вперёд ›</span>
+            <span>Последняя »</span>
+        {% endif %}
+    </div>
 </body>
 </html>

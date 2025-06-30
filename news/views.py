@@ -1,11 +1,30 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView,DetailView
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django_filters.views import FilterView
-from django import forms
 import django_filters
+from django import forms
 from .models import Post, Comment
+
+
+@login_required
+@require_POST
+def article_like(request, pk):
+    article = get_object_or_404(Post, pk=pk, post_type='article')
+    article.rating += 1
+    article.save()
+    return redirect('article_detail', pk=pk)
+
+@login_required
+@require_POST
+def article_dislike(request, pk):
+    article = get_object_or_404(Post, pk=pk, post_type='article')
+    article.rating -= 1
+    article.save()
+    return redirect('article_detail', pk=pk)
 
 
 class PostForm(forms.ModelForm):
@@ -42,7 +61,8 @@ class NewsSearchView(FilterView):
     paginate_by = 10
 
     def get_queryset(self):
-        return super().get_queryset().order_by('-created_at')
+        qs = super().get_queryset()
+        return qs.filter(post_type='news').order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,13 +109,11 @@ class NewsDetailView(DetailView):
         return Post.objects.filter(post_type='news')
 
 
-
 class ArticlesListView(ListView):
     model = Post
     template_name = 'articles/articles_list.html'
     context_object_name = 'articles_list'
     paginate_by = 10
-
     def get_queryset(self):
         return Post.objects.filter(post_type='article').order_by('-created_at')
 
