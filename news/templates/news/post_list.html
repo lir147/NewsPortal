@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Новости</h1>
+<ul>
+  {% for news in page_obj.object_list %}
+    <li>
+      <a href="{% url 'news_detail' news.pk %}">{{ news.title }}</a>
+      (
+      {% if news.author and news.author.user %}
+        {{ news.author.user.username }}
+      {% else %}
+        Автор неизвестен
+      {% endif %}
+      ) - {{ news.created_at|date:"Y-m-d H:i" }}
+    </li>
+  {% empty %}
+    <li>Новостей нет</li>
+  {% endfor %}
+</ul>
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page=1">Первая</a>
+    <a href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+  {% else %}
+    <span>Первая</span>
+    <span>Предыдущая</span>
+  {% endif %}
+  {% for num in page_obj.paginator.page_range %}
+    {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+      {% if num == page_obj.number %}
+        <strong>{{ num }}</strong>
+      {% else %}
+        <a href="?page={{ num }}">{{ num }}</a>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">Следующая</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+  {% else %}
+    <span>Следующая</span>
+    <span>Последняя</span>
+  {% endif %}
+</div>
+{% endblock %}
