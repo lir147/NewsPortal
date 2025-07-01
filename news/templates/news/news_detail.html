@@ -1,9 +1,40 @@
 {% extends "base.html" %}
-{% load censor_tags %}
 
 {% block content %}
-  <h1>{{ item.title|censor }}</h1>
-  <p><em>Дата публикации: {{ item.created_at|date:"d.m.Y" }}</em></p>  {# changed pub_date → created_at #}
-  <div>{{ item.content|censor }}</div>  {# changed text → content #}
-  <p><a href="{% url 'news_list' %}">К списку новостей</a></p>
+<h1>{{ item.title }}</h1>
+<p><em>Дата публикации: {{ item.created_at|date:"d.m.Y" }}</em></p>
+<p>{{ item.content }}</p>
+
+<p>
+  <form action="{% url 'news_like' item.pk %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">👍 Лайк ({{ item.rating }})</button>
+  </form>
+  <form action="{% url 'news_dislike' item.pk %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">👎 Дизлайк</button>
+  </form>
+</p>
+
+<h3>Комментарии</h3>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Добавить комментарий</button>
+</form>
+
+<ul>
+  {% for comment in comments %}
+    <li>
+      <strong>{{ comment.user.username }}</strong> <small>{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+      <p>{{ comment.text }}</p>
+      <p>Лайки: {{ comment.rating }}</p>
+    </li>
+  {% empty %}
+    <li>Комментариев пока нет</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'news_list' %}">К списку новостей</a>
 {% endblock %}
