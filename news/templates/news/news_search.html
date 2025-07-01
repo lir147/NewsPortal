@@ -3,42 +3,43 @@
     {{ filter.form.as_p }}
     <button type="submit">Искать</button>
 </form>
+
+<h2>Результаты поиска</h2>
 <ul>
-  {% for news in filter.qs %}
-    <li>
-      <a href="{% url 'news_detail' news.pk %}">
-        {{ news.title }}
-      </a> — {{ news.author.user.username }} — {{ news.created_at|date:"d.m.Y, H:i" }}
-    </li>
-  {% empty %}
-    <li>Ничего не найдено</li>
-  {% endfor %}
+    {% for news in news_list %}
+        <li>
+            <a href="{% url 'news_detail' news.pk %}">{{ news.title }}</a>
+            ({{ news.author.user.username }}) - {{ news.created_at|date:"Y-m-d H:i" }}
+        </li>
+    {% empty %}
+        <li>Ничего не найдено</li>
+    {% endfor %}
 </ul>
+
 <div class="pagination">
-    {% if filter.page_obj.has_previous %}
-        <a href="?page=1{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">&laquo; Первая</a>
-        <a href="?page={{ filter.page_obj.previous_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">&lsaquo; Назад</a>
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if base_query %}&{{ base_query }}{% endif %}">&laquo; Первая</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">&lsaquo; Предыдущая</a>
     {% else %}
-        <span>&laquo; Первая</span>
-        <span>&lsaquo; Назад</span>
+        <span class="disabled">&laquo; Первая</span>
+        <span class="disabled">&lsaquo; Предыдущая</span>
     {% endif %}
 
-    {# Показать номера страниц около текущей #}
-    {% for num in filter.paginator.page_range %}
-        {% if num >= filter.page_obj.number|add:-2 and num <= filter.page_obj.number|add:2 %}
-            {% if num == filter.page_obj.number %}
+    {% for num in page_obj.paginator.page_range %}
+        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+            {% if num == page_obj.number %}
                 <strong>{{ num }}</strong>
             {% else %}
-                <a href="?page={{ num }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">{{ num }}</a>
+                <a href="?page={{ num }}{% if base_query %}&{{ base_query }}{% endif %}">{{ num }}</a>
             {% endif %}
         {% endif %}
     {% endfor %}
 
-    {% if filter.page_obj.has_next %}
-        <a href="?page={{ filter.page_obj.next_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Вперёд &rsaquo;</a>
-        <a href="?page={{ filter.paginator.num_pages }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Последняя &raquo;</a>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">Следующая &rsaquo;</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if base_query %}&{{ base_query }}{% endif %}">Последняя &raquo;</a>
     {% else %}
-        <span>Вперёд &rsaquo;</span>
-        <span>Последняя &raquo;</span>
+        <span class="disabled">Следующая &rsaquo;</span>
+        <span class="disabled">Последняя &raquo;</span>
     {% endif %}
 </div>

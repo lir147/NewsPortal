@@ -1,36 +1,34 @@
-<h1>Новости ({{ page_obj.paginator.count }})</h1>
+<h1>Новости</h1>
 <ul>
-  {% for news in news_list %}
-    <li>{{ news.title }} — {{ news.created_at|date:"d.m.Y" }}</li>
-  {% empty %}
-    <li>Новостей нет.</li>
-  {% endfor %}
+    {% for news in page_obj.object_list %}
+        <li>{{ news.title }} ({{ news.author.username }}) - {{ news.created_at|date:"Y-m-d H:i" }}</li>
+    {% empty %}
+        <li>Новостей нет</li>
+    {% endfor %}
 </ul>
 
 <div class="pagination">
-  {% if page_obj.has_previous %}
-    <a href="?page=1">« Первая</a>
-    <a href="?page={{ page_obj.previous_page_number }}">‹ Назад</a>
-  {% else %}
-    <span>« Первая</span>
-    <span>‹ Назад</span>
-  {% endif %}
-
-  {% for num in page_obj.paginator.page_range %}
-    {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
-      {% if num == page_obj.number %}
-        <strong>{{ num }}</strong>
-      {% else %}
-        <a href="?page={{ num }}">{{ num }}</a>
-      {% endif %}
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if base_query %}&{{ base_query }}{% endif %}">&laquo; Первая</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">&lsaquo; Предыдущая</a>
+    {% else %}
+        <span class="disabled">&laquo; Первая</span>
+        <span class="disabled">&lsaquo; Предыдущая</span>
     {% endif %}
-  {% endfor %}
 
-  {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}">Вперёд ›</a>
-    <a href="?page={{ page_obj.paginator.num_pages }}">Последняя »</a>
-  {% else %}
-    <span>Вперёд ›</span>
-    <span>Последняя »</span>
-  {% endif %}
+    {% for num in visible_pages %}
+        {% if num == current_page %}
+            <strong>{{ num }}</strong>
+        {% else %}
+            <a href="?page={{ num }}{% if base_query %}&{{ base_query }}{% endif %}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">Следующая &rsaquo;</a>
+        <a href="?page={{ total_pages }}{% if base_query %}&{{ base_query }}{% endif %}">Последняя &raquo;</a>
+    {% else %}
+        <span class="disabled">Следующая &rsaquo;</span>
+        <span class="disabled">Последняя &raquo;</span>
+    {% endif %}
 </div>

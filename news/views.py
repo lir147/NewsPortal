@@ -7,9 +7,14 @@ from django.utils import timezone
 from django_filters.views import FilterView
 import django_filters
 from django import forms
+from urllib.parse import urlencode
+
+from django.core.paginator import Paginator
+from django.utils.dateparse import parse_date
+
 from .models import Post, Comment
 
-
+# Лайки/дизлайки для статей
 @login_required
 @require_POST
 def article_like(request, pk):
@@ -26,13 +31,13 @@ def article_dislike(request, pk):
     article.save()
     return redirect('article_detail', pk=pk)
 
-
+# Форма для создания/редактирования поста
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         exclude = ['post_type', 'created_at']
 
-
+# Фильтр для поиска новостей
 class PostFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains', label='Название')
     author__user__username = django_filters.CharFilter(field_name='author__user__username', lookup_expr='icontains', label='Автор')
@@ -42,7 +47,7 @@ class PostFilter(django_filters.FilterSet):
         model = Post
         fields = ['title', 'author__user__username', 'created_at']
 
-
+# Список новостей с пагинацией
 class NewsListView(ListView):
     model = Post
     template_name = 'news/default.html'
@@ -52,12 +57,12 @@ class NewsListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news').order_by('-created_at')
 
-
+# Поиск новостей на основе django-filter и пагинации
 class NewsSearchView(FilterView):
     model = Post
     filterset_class = PostFilter
     template_name = 'news/news_search.html'
-    context_object_name = 'filter'
+    context_object_name = 'news_list'
     paginate_by = 10
 
     def get_queryset(self):
@@ -65,10 +70,11 @@ class NewsSearchView(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # В контекст добавляем request для пагинации с параметрами
         context['request'] = self.request
         return context
 
-
+# Создание новости
 class NewsCreateView(CreateView):
     model = Post
     form_class = PostForm
@@ -80,7 +86,7 @@ class NewsCreateView(CreateView):
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
-
+# Редактирование новости
 class NewsUpdateView(UpdateView):
     model = Post
     form_class = PostForm
@@ -90,7 +96,7 @@ class NewsUpdateView(UpdateView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
-
+# Удаление новости
 class NewsDeleteView(DeleteView):
     model = Post
     template_name = 'news/news_confirm_delete.html'
@@ -99,6 +105,7 @@ class NewsDeleteView(DeleteView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
+# Детальный просмотр новости
 class NewsDetailView(DetailView):
     model = Post
     template_name = 'news/news_detail.html'
@@ -107,15 +114,17 @@ class NewsDetailView(DetailView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
-
+# Список статей с пагинацией
 class ArticlesListView(ListView):
     model = Post
     template_name = 'articles/articles_list.html'
     context_object_name = 'articles_list'
     paginate_by = 10
+
     def get_queryset(self):
         return Post.objects.filter(post_type='article').order_by('-created_at')
 
+# Создание статьи
 class ArticleCreateView(CreateView):
     model = Post
     form_class = PostForm
@@ -127,6 +136,7 @@ class ArticleCreateView(CreateView):
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
+# Редактирование статьи
 class ArticleUpdateView(UpdateView):
     model = Post
     form_class = PostForm
@@ -136,6 +146,7 @@ class ArticleUpdateView(UpdateView):
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
+# Удаление статьи
 class ArticleDeleteView(DeleteView):
     model = Post
     template_name = 'articles/article_confirm_delete.html'
