@@ -3,10 +3,12 @@ from .views import (
     article_like, article_dislike,
     NewsListView, NewsSearchView, NewsCreateView, NewsUpdateView, NewsDeleteView,
     ArticlesListView, ArticleCreateView, ArticleUpdateView, ArticleDeleteView,
-    news_like, news_dislike,NewsDetailViewWithComments,ArticleDetailView
+    news_like, news_dislike,NewsDetailViewWithComments,ArticleDetailView,register
 )
 
 urlpatterns = [
+
+    path('accounts/register/', register, name='register'),
 
     path('news/', NewsListView.as_view(), name='news_list'),
     path('news/search/', NewsSearchView.as_view(), name='news_search'),
@@ -27,4 +29,5 @@ urlpatterns = [
 
     path('articles/<int:pk>/like/', article_like, name='article_like'),
     path('articles/<int:pk>/dislike/', article_dislike, name='article_dislike'),
+
 ]

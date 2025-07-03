@@ -12,9 +12,15 @@ from django.core.paginator import Paginator
 from django.utils.dateparse import parse_date
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from .models import Post, Comment
 from .forms import CommentForm
+from .models import Article
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .forms import RegisterForm
+
+
+
 
 @login_required
 @require_POST
@@ -48,6 +54,13 @@ def news_dislike(request, pk):
     news.rating -= 1
     news.save()
     return redirect('news_detail', pk=pk)
+
+
+class ArticleUpdateView(LoginRequiredMixin, UpdateView):
+    model = Article
+    fields = ['title', 'content', 'category']
+    template_name = 'news/artivle_update.html'
+    success_url = 'news'
 
 
 class NewsDetailViewWithComments(View):
@@ -195,3 +208,15 @@ class ArticleDeleteView(DeleteView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
+
+
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("news_list")
+    else:
+        form = RegisterForm()
+    return render(request, "register.html", {"form": form})

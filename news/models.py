@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Model, CharField, TextField, ForeignKey
+
+
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -62,3 +65,13 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=250)
+    content = models.TextField()
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)  # пример связи
+
+    def __str__(self):
+        return self.title
+

@@ -100,3 +100,6 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGIN_REDIRECT_URL = '/news/'
+LOGIN_URL = '/accounts/login/'
+SITE_ID = 1
