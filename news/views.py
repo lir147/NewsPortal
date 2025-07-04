@@ -9,11 +9,9 @@ from django.utils import timezone
 import django_filters
 from django_filters.views import FilterView
 from django import forms
-
 from .models import Post, Comment, Article
-from .forms import CommentForm, RegisterForm
+from .forms import CommentForm, RegisterForm, ProfileForm
 from django.contrib.auth import login
-
 
 
 @login_required
@@ -49,6 +47,14 @@ def news_dislike(request, pk):
     return redirect('news_detail', pk=pk)
 
 
+@login_required
+@require_POST
+def become_author(request):
+    authors_group, _ = Group.objects.get_or_create(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        request.user.groups.add(authors_group)
+        request.user.save()
+    return redirect('profile')
 
 class NewsDetailViewWithComments(View):
     def get(self, request, pk):
@@ -70,11 +76,11 @@ class NewsDetailViewWithComments(View):
         return render(request, 'news/news_detail.html', {'item': news, 'form': form, 'comments': comments})
 
 
-
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         exclude = ['post_type', 'created_at']
+
 
 class PostFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains', label='Название')
@@ -90,7 +96,6 @@ class PostFilter(django_filters.FilterSet):
         fields = ['title', 'author__user__username', 'created_at']
 
 
-
 class NewsListView(ListView):
     model = Post
     template_name = 'news/default.html'
@@ -99,6 +104,7 @@ class NewsListView(ListView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='news').order_by('-created_at')
+
 
 class NewsSearchView(FilterView):
     model = Post
@@ -115,6 +121,7 @@ class NewsSearchView(FilterView):
         context['request'] = self.request
         return context
 
+
 class ArticlesListView(ListView):
     model = Post
     template_name = 'articles/articles_list.html'
@@ -123,7 +130,6 @@ class ArticlesListView(ListView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='article').order_by('-created_at')
-
 
 
 class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -160,7 +166,6 @@ class NewsDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         return Post.objects.filter(post_type='news')
 
 
-
 class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -173,6 +178,7 @@ class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
+
 class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
@@ -183,6 +189,7 @@ class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
+
 class ArticleDetailView(DetailView):
     model = Post
     template_name = 'articles/article_detail.html'
@@ -190,6 +197,7 @@ class ArticleDetailView(DetailView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
+
 
 class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
@@ -199,7 +207,6 @@ class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
 
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
-
 
 
 def register(request):
@@ -216,13 +223,4 @@ def register(request):
         form = RegisterForm()
     return render(request, "register.html", {"form": form})
 
-
-
-@login_required
-def become_author(request):
-    authors_group, created = Group.objects.get_or_create(name='authors')
-    if not request.user.groups.filter(name='authors').exists():
-        request.user.groups.add(authors_group)
-        request.user.save()
-    return redirect('profile')
 

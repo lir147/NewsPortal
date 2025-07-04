@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.yandex',
 
 ]
 
@@ -93,4 +94,4 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.Email'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
