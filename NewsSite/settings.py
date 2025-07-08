@@ -101,9 +101,9 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False
 
-EMAIL_HOST_USER = 'Lirik12125@yandex.ru'
-EMAIL_HOST_PASSWORD = 'uqhhquqrbmxbvwct'
-DEFAULT_FROM_EMAIL = 'News Portal <Lirik12125@yandex.ru>'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = 'News Portal <>'
 
 SITE_URL = 'http://127.0.0.1:8000'
 
