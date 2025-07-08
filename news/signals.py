@@ -8,16 +8,16 @@ from django.template.loader import render_to_string
 from news.models import Post, Subscription, Category,PostCategory
 
 @receiver(m2m_changed, sender=PostCategory)
-def notify_subscribers_new_article(sender, instance, action, reverse, pk_set, **kwargs):
+def notify_subscribers_new_article(sender, instance, action,**kwargs):
     if action == 'post_add':
-        categories = Category.objects.filter(pk__in=pk_set)
+        categories = Category.objects.filter()
         for category in categories:
             subs = Subscription.objects.filter(category=category).select_related('user')
             for sub in subs:
                 user = sub.user
                 if not user.email:
                     continue
-                article_url = settings.SITE_URL + reverse('article_detail', args=[instance.pk])
+                article_url = settings.SITE_URL
                 subject = f"Новая статья в категории {category.name}"
                 html_message = render_to_string('emails/new_article.html', {
                     'user': user,
