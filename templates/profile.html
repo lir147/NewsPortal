@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Профиль пользователя</h1>
+
+<p>Привет, {{ request.user.username }}!</p>
+<p>Это ваша личная страница.</p>
+
+{% endblock %}

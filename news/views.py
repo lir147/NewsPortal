@@ -9,10 +9,30 @@ from django.utils import timezone
 import django_filters
 from django_filters.views import FilterView
 from django import forms
-from .models import Post, Comment, Article
-from .forms import CommentForm, RegisterForm, ProfileForm
+from .models import Post, Comment, Article,Subscription
+from .forms import CommentForm, RegisterForm, ProfileForm,SubscriptionForm
 from django.contrib.auth import login
 
+
+@login_required
+def profile_view(request):
+    return render(request, 'profile.html')
+
+@login_required
+def manage_subscriptions(request):
+    user = request.user
+    if request.method == 'POST':
+        form = SubscriptionForm(request.POST)
+        if form.is_valid():
+            selected_categories = form.cleaned_data['categories']
+            Subscription.objects.filter(user=user).delete()
+            for cat in selected_categories:
+                Subscription.objects.create(user=user, category=cat)
+            return redirect('profile')
+    else:
+        initial_cats = [sub.category for sub in user.subscriptions.all()]
+        form = SubscriptionForm(initial={'categories': initial_cats})
+    return render(request, 'subscriptions/manage.html', {'form': form})
 
 @login_required
 @require_POST
@@ -223,4 +243,8 @@ def register(request):
         form = RegisterForm()
     return render(request, "register.html", {"form": form})
 
+
+class PostDetail(DetailView):
+    model = Post
+    template_name = 'news/post_detail.html'
 

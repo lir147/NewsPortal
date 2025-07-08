@@ -4,7 +4,7 @@ from .views import (
     NewsListView, NewsSearchView, NewsCreateView, NewsUpdateView, NewsDeleteView,
     ArticlesListView, ArticleCreateView, ArticleUpdateView, ArticleDeleteView,
     news_like, news_dislike, NewsDetailViewWithComments, ArticleDetailView,
-    register, become_author
+    register, become_author, manage_subscriptions, profile_view   # <-- добавлен profile_view
 )
 
 urlpatterns = [
@@ -22,6 +22,12 @@ urlpatterns = [
 
     # Стать автором
     path('become-author/', become_author, name='become_author'),
+
+    # Подписки на категории
+    path('subscriptions/', manage_subscriptions, name='manage_subscriptions'),
+
+    # Профиль
+    path('profile/', profile_view, name='profile'),
 
     # Статьи
     path('articles/', ArticlesListView.as_view(), name='articles_list'),

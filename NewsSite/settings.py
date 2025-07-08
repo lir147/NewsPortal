@@ -88,10 +88,22 @@ LOGOUT_REDIRECT_URL = 'account_login'
 SITE_ID = 1
 
 
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+EEMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
+
+EMAIL_HOST_USER = 'Lirik12125@yandex.ru'
+EMAIL_HOST_PASSWORD = 'uqhhquqrbmxbvwct'
+DEFAULT_FROM_EMAIL = 'News Portal <Lirik12125@yandex.ru>'
+
+SITE_URL = 'http://127.0.0.1:8000'
+

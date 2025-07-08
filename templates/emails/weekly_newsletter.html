@@ -1,0 +1,9 @@
+<p>Здравствуйте, {{ user.username }}!</p>
+<p>Новые статьи за неделю:</p>
+<ul>
+  {% for article in articles %}
+  <li><a href="{{ article.url }}">{{ article.title }}</a><br><small>{{ article.summary }}</small></li>
+  {% empty %}
+  <li>Новых статей нет.</li>
+  {% endfor %}
+</ul>

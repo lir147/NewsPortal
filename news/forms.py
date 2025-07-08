@@ -1,7 +1,17 @@
 from django import forms
-from .models import Post, Comment
+from .models import Post, Comment, Category
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+
+
+class SubscriptionForm(forms.Form):
+    categories = forms.ModelMultipleChoiceField(
+        queryset=Category.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        label='Выберите категории для подписки',
+        required=True,
+    )
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
