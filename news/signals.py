@@ -8,8 +8,9 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from news.models import Post, Subscription
 
+
 @receiver(post_save, sender=Post)
-def send_new_article_notification(sender, instance, created, **kwargs):
+def notify_subscribers_new_article(sender, instance, created, **kwargs):
     if created and instance.post_type == 'article':
         categories = instance.categories.all()
         for category in categories:
@@ -18,18 +19,25 @@ def send_new_article_notification(sender, instance, created, **kwargs):
                 user = sub.user
                 if not user.email:
                     continue
+
                 article_url = settings.SITE_URL + reverse('article_detail', args=[instance.pk])
                 subject = f"Новая статья в категории {category.name}"
-                html_content = render_to_string('emails/new_article.html', {
+                html_message = render_to_string('emails/new_article.html', {
                     'user': user,
                     'article': instance,
                     'article_url': article_url,
+                    'category': category,
                 })
-                plain_content = f"Здравствуйте, {user.username}!\nВ категории {category.name} вышла новая статья: {instance.title}\nЧитайте по ссылке: {article_url}"
-                send_mail(subject, plain_content, settings.DEFAULT_FROM_EMAIL,
-                          [user.email], html_message=html_content)
+                plain_message = f"Здравствуйте, {user.username}!\n\nВ категории {category.name} появилась новая статья: {instance.title}\nПрочитать: {article_url}"
 
-
+                send_mail(
+                    subject,
+                    plain_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
 
 @receiver(post_save, sender=User)
 def send_welcome_email(sender, instance, created, **kwargs):

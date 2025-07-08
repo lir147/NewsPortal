@@ -1,9 +1,26 @@
-<p>Здравствуйте, {{ user.username }}!</p>
-<p>Новые статьи за неделю:</p>
-<ul>
-  {% for article in articles %}
-  <li><a href="{{ article.url }}">{{ article.title }}</a><br><small>{{ article.summary }}</small></li>
-  {% empty %}
-  <li>Новых статей нет.</li>
-  {% endfor %}
-</ul>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 14px; color: #333; }
+    a { color: #1a73e8; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <p>Здравствуйте, {{ user.username }}!</p>
+  <p>Новые статьи за неделю:</p>
+  <ul>
+    {% for article in articles %}
+      <li>
+        <a href="{{ article.url }}">{{ article.title }}</a><br/>
+        <small>{{ article.summary }}</small>
+      </li>
+    {% empty %}
+      <li>Новых статей нет.</li>
+    {% endfor %}
+  </ul>
+  <hr/>
+  <p>Спасибо, что вы с нами!</p>
+</body>
+</html>

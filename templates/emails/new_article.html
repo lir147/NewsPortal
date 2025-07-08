@@ -1,4 +1,10 @@
 <p>Здравствуйте, {{ user.username }}!</p>
-<p>В категории <strong>{{ article.categories.first.name }}</strong> новая статья: <strong>{{ article.title }}</strong></p>
+
+{% if article.categories.exists %}
+  <p>В категории <strong>{{ article.categories.first.name }}</strong> новая статья: <strong>{{ article.title }}</strong></p>
+{% else %}
+  <p>Появилась новая статья: <strong>{{ article.title }}</strong></p>
+{% endif %}
+
 <p>{{ article.content|truncatewords:30 }}</p>
 <p><a href="{{ article_url }}">Читать статью</a></p>
