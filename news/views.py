@@ -9,9 +9,16 @@ from django.utils import timezone
 import django_filters
 from django_filters.views import FilterView
 from django import forms
-from .models import Post, Comment, Article,Subscription
+from .models import Post, Comment, Article,Subscription,Category
 from .forms import CommentForm, RegisterForm, ProfileForm,SubscriptionForm
 from django.contrib.auth import login
+
+
+@login_required
+def unsubscribe(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    Subscription.objects.filter(user=request.user, category=category).delete()
+    return redirect('manage_subscriptions')
 
 
 @login_required

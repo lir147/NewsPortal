@@ -4,7 +4,7 @@ from .views import (
     NewsListView, NewsSearchView, NewsCreateView, NewsUpdateView, NewsDeleteView,
     ArticlesListView, ArticleCreateView, ArticleUpdateView, ArticleDeleteView,
     news_like, news_dislike, NewsDetailViewWithComments, ArticleDetailView,
-    register, become_author, manage_subscriptions, profile_view   # <-- добавлен profile_view
+    register, become_author, manage_subscriptions, profile_view, unsubscribe
 )
 
 urlpatterns = [
@@ -25,6 +25,7 @@ urlpatterns = [
 
     # Подписки на категории
     path('subscriptions/', manage_subscriptions, name='manage_subscriptions'),
+    path('unsubscribe/<int:category_id>/', unsubscribe, name='unsubscribe'),
 
     # Профиль
     path('profile/', profile_view, name='profile'),

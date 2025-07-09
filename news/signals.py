@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from news.models import Post, Subscription, Category,PostCategory
+from django.urls import reverse
 
 @receiver(m2m_changed, sender=PostCategory)
 def notify_subscribers_new_article(sender, instance, action,**kwargs):
@@ -17,7 +18,7 @@ def notify_subscribers_new_article(sender, instance, action,**kwargs):
                 user = sub.user
                 if not user.email:
                     continue
-                article_url = settings.SITE_URL
+                article_url = settings.SITE_URL + reverse('article_detail', args=[instance.pk])
                 subject = f"Новая статья в категории {category.name}"
                 html_message = render_to_string('emails/new_article.html', {
                     'user': user,
