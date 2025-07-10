@@ -11,6 +11,7 @@ from news.models import Post, Subscription, Category
 class Command(BaseCommand):
     help = "Еженедельная рассылка новых статей по подпискам"
 
+
     def handle(self, *args, **kwargs):
         now = timezone.now()
         week_ago = now - timedelta(days=7)
