@@ -5,13 +5,26 @@ from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from news.models import Post, Subscription, Category,PostCategory
 from django.urls import reverse
+from news.models import Post, Subscription, Category, PostCategory
+from news.tasks import send_new_post_email
+
+@receiver(post_save, sender=Post)
+def notify_subscribers(sender, instance, created, **kwargs):
+    if created:
+        subscribers_emails = Subscription.objects.filter(
+            category__in=instance.categories.all()
+        ).values_list('user__email', flat=True).distinct()
+        subscribers_emails = [email for email in subscribers_emails if email]
+        if subscribers_emails:
+            subject = f'Новая новость: {instance.title}'
+            message = instance.content
+            send_new_post_email.delay(subject, message, subscribers_emails)  # Отправка асинхронно через Celery
 
 @receiver(m2m_changed, sender=PostCategory)
-def notify_subscribers_new_article(sender, instance, action,**kwargs):
+def notify_subscribers_new_article(sender, instance, action, **kwargs):
     if action == 'post_add':
-        categories = Category.objects.filter()
+        categories = instance.categories.all()
         for category in categories:
             subs = Subscription.objects.filter(category=category).select_related('user')
             for sub in subs:
@@ -34,8 +47,8 @@ def notify_subscribers_new_article(sender, instance, action,**kwargs):
                     send_mail(subject, plain_message, settings.DEFAULT_FROM_EMAIL,
                               [user.email], html_message=html_message, fail_silently=False)
                 except Exception as e:
+                    # Для продакшена лучше заменить print на логирование
                     print(f"Ошибка отправки письма {user.email}: {e}")
-
 
 @receiver(post_save, sender=User)
 def send_welcome_email(sender, instance, created, **kwargs):
