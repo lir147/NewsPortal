@@ -1,11 +1,24 @@
 {% extends "base.html" %}
-
 {% block content %}
   <h1>{{ article.title }}</h1>
   <p><strong>Автор:</strong> {{ article.author.user.username }}</p>
   <p><strong>Дата публикации:</strong> {{ article.created_at|date:"d.m.Y H:i" }}</p>
+
   <div>
     {{ article.content }}
   </div>
+
+  <p>
+<form action="{% url 'news_like' item.pk %}" method="post" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit">👍 Лайк ({{ item.rating }})</button>
+</form>
+
+<form action="{% url 'news_dislike' item.pk %}" method="post" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit">👎 Дизлайк</button>
+</form>
+  </p>
+
   <a href="{% url 'articles_list' %}">Назад к списку статей</a>
 {% endblock %}

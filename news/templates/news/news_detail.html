@@ -6,14 +6,15 @@
 <p>{{ item.content }}</p>
 
 <p>
-  <form action="{% url 'news_like' item.pk %}" method="post" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit">👍 Лайк ({{ item.rating }})</button>
-  </form>
-  <form action="{% url 'news_dislike' item.pk %}" method="post" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit">👎 Дизлайк</button>
-  </form>
+<form action="{% url 'news_like' item.pk %}" method="post" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit">👍 Лайк ({{ item.rating }})</button>
+</form>
+
+<form action="{% url 'news_dislike' item.pk %}" method="post" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit">👎 Дизлайк</button>
+</form>
 </p>
 
 <h3>Комментарии</h3>

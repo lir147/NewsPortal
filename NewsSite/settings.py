@@ -1,10 +1,15 @@
 import os
 from pathlib import Path
 from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 SECRET_KEY = 'django-insecure-(jhr0@l$f9lfi=hhmf4%c+ty(tx1h2g_&vw$v#nmhlry&f6hxr'
+
 DEBUG = True
+
 ALLOWED_HOSTS = []
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -109,3 +114,6 @@ CACHES = {
         'LOCATION': 'unique',
     }
 }
+
+
+CSRF_FAILURE_VIEW = 'news.views.csrf_failure'

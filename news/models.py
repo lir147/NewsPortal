@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse  # импортируем reverse
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -16,7 +17,7 @@ class Author(models.Model):
         self.save()
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -38,7 +39,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     categories = models.ManyToManyField(Category, through='PostCategory')
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=255)
     content = models.TextField()
     rating = models.IntegerField(default=0)
 
@@ -56,6 +57,18 @@ class Post(models.Model):
         self.rating -= 1
         self.save()
 
+    def get_absolute_url(self):
+        """
+        Возвращает URL детального просмотра, зависит от типа поста.
+        Используйте в шаблонах и др. для удобного доступа.
+        """
+        if self.post_type == 'news':
+            return reverse('news_detail', args=[str(self.pk)])
+        elif self.post_type == 'article':
+            return reverse('article_detail', args=[str(self.pk)])
+        else:
+            return '#'
+
 class PostCategory(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -66,6 +79,9 @@ class Comment(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(default=0)
+
+    def __str__(self):
+        return (self.text[:50] + '...') if len(self.text) > 50 else self.text
 
     def like(self):
         self.rating += 1
@@ -79,7 +95,13 @@ class Article(models.Model):
     title = models.CharField(max_length=250)
     content = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    updated_at = models.DateTimeField(auto_now=True)  # добавлено для кэширования
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        """
+        Возвращает URL детального просмотра статьи.
+        """
+        return reverse('article_detail', args=[str(self.pk)])

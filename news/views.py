@@ -9,14 +9,14 @@ from django.utils import timezone
 import django_filters
 from django_filters.views import FilterView
 from django import forms
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
 from .models import Post, Comment, Article, Subscription, Category
-from .forms import CommentForm, RegisterForm, ProfileForm, SubscriptionForm
+from .forms import CommentForm, RegisterForm, SubscriptionForm, PostForm
 from django.contrib.auth import login
-from .forms import PostForm
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
+# Фильтрация постов
 class PostFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains', label='Название')
     author__user__username = django_filters.CharFilter(
@@ -35,18 +35,21 @@ class PostFilter(django_filters.FilterSet):
         model = Post
         fields = ['title', 'author__user__username', 'created_at']
 
-# --- Представления без кэширования ---
 
+# Отписка от категории
 @login_required
 def unsubscribe(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
     Subscription.objects.filter(user=request.user, category=category).delete()
     return redirect('manage_subscriptions')
 
+
 @login_required
 def profile_view(request):
     return render(request, 'profile.html')
 
+
+# Управление подписками
 @login_required
 def manage_subscriptions(request):
     user = request.user
@@ -63,38 +66,42 @@ def manage_subscriptions(request):
         form = SubscriptionForm(initial={'categories': initial_cats})
     return render(request, 'subscriptions/manage.html', {'form': form})
 
+
+# Лайк/дизлайк для статей
 @login_required
 @require_POST
 def article_like(request, pk):
     article = get_object_or_404(Post, pk=pk, post_type='article')
-    article.rating += 1
-    article.save()
+    article.like()      # Используем метод модели
     return redirect('article_detail', pk=pk)
+
 
 @login_required
 @require_POST
 def article_dislike(request, pk):
     article = get_object_or_404(Post, pk=pk, post_type='article')
-    article.rating -= 1
-    article.save()
+    article.dislike()   # Используем метод модели
     return redirect('article_detail', pk=pk)
 
+
+# Лайк/дизлайк для новостей
 @login_required
 @require_POST
 def news_like(request, pk):
     news = get_object_or_404(Post, pk=pk, post_type='news')
-    news.rating += 1
-    news.save()
+    news.like()
     return redirect('news_detail', pk=pk)
+
 
 @login_required
 @require_POST
 def news_dislike(request, pk):
     news = get_object_or_404(Post, pk=pk, post_type='news')
-    news.rating -= 1
-    news.save()
+    news.dislike()
     return redirect('news_detail', pk=pk)
 
+
+# Стать автором
 @login_required
 @require_POST
 def become_author(request):
@@ -104,15 +111,15 @@ def become_author(request):
         request.user.save()
     return redirect('profile')
 
-# --- Кэшируемое CBV / View ---
 
-@method_decorator(cache_page(60 * 5), name='dispatch')  # кэшируем 5 минут новости с комментариями
+# Просмотр новости с комментариями (без кэширования для корректной работы CSRF)
 class NewsDetailViewWithComments(View):
     def get(self, request, pk):
         news = get_object_or_404(Post, pk=pk, post_type='news')
         form = CommentForm()
         comments = news.comments.all().order_by('-created_at')
         return render(request, 'news/news_detail.html', {'item': news, 'form': form, 'comments': comments})
+
     def post(self, request, pk):
         news = get_object_or_404(Post, pk=pk, post_type='news')
         form = CommentForm(request.POST)
@@ -125,100 +132,133 @@ class NewsDetailViewWithComments(View):
         comments = news.comments.all().order_by('-created_at')
         return render(request, 'news/news_detail.html', {'item': news, 'form': form, 'comments': comments})
 
-@method_decorator(cache_page(60), name='dispatch')  # главная страница (новости) кэш 1 минута
+
+# Главная новостная страница с кэшированием на 60 секунд
+@method_decorator(cache_page(60), name='dispatch')
 class NewsListView(ListView):
     model = Post
     template_name = 'news/default.html'
     context_object_name = 'news_list'
     paginate_by = 10
+
     def get_queryset(self):
         return Post.objects.filter(post_type='news').order_by('-created_at')
 
+
+# Поиск новостей
 class NewsSearchView(FilterView):
     model = Post
     filterset_class = PostFilter
     template_name = 'news/news_search.html'
     context_object_name = 'news_list'
     paginate_by = 10
+
     def get_queryset(self):
         return super().get_queryset().filter(post_type='news').order_by('-created_at')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['request'] = self.request
         return context
 
+
+# Список статей
 class ArticlesListView(ListView):
     model = Post
     template_name = 'articles/articles_list.html'
     context_object_name = 'articles_list'
     paginate_by = 10
+
     def get_queryset(self):
         return Post.objects.filter(post_type='article').order_by('-created_at')
 
+
+# Создание новости
 class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'news/news_form.html'
     success_url = reverse_lazy('news_list')
     permission_required = 'news.add_post'
+
     def form_valid(self, form):
         form.instance.post_type = 'news'
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
+
+# Обновление новости
 class NewsUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'news/news_form.html'
     success_url = reverse_lazy('news_list')
     permission_required = 'news.change_post'
+
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
+
+# Удаление новости
 class NewsDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
     template_name = 'news/news_confirm_delete.html'
     success_url = reverse_lazy('news_list')
     permission_required = 'news.delete_post'
+
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
+
+# Создание статьи
 class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'articles/article_form.html'
     success_url = reverse_lazy('articles_list')
     permission_required = 'news.add_post'
+
     def form_valid(self, form):
         form.instance.post_type = 'article'
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
+
+# Обновление статьи
 class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'articles/article_form.html'
     success_url = reverse_lazy('articles_list')
     permission_required = 'news.change_post'
+
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
-@method_decorator(cache_page(60 * 5), name='dispatch')  # кэшируем статьи по 5 минут
+
+# Просмотр статьи с кэшированием
+@method_decorator(cache_page(60 * 5), name='dispatch')
 class ArticleDetailView(DetailView):
     model = Post
     template_name = 'articles/article_detail.html'
     context_object_name = 'article'
+
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
+
+# Удаление статьи
 class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
     template_name = 'articles/article_confirm_delete.html'
     success_url = reverse_lazy('articles_list')
     permission_required = 'news.delete_post'
+
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
+
+# Регистрация пользователя
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -233,6 +273,13 @@ def register(request):
         form = RegisterForm()
     return render(request, "register.html", {"form": form})
 
+
+# Детальный просмотр поста (пока без кастомного функционала)
 class PostDetail(DetailView):
     model = Post
     template_name = 'news/post_detail.html'
+
+
+def csrf_failure(request, reason=""):
+    context = {'reason': reason}
+    return render(request, 'csrf_failure.html', context)
