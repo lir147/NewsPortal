@@ -1,45 +1,147 @@
-<h1>Поиск новостей</h1>
-<form method="get">
-    {{ filter.form.as_p }}
-    <button type="submit">Искать</button>
-</form>
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<style>
+    .search-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 30px 25px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+    }
 
-<h2>Результаты поиска</h2>
-<ul>
-    {% for news in news_list %}
-        <li>
-            <a href="{% url 'news_detail' news.pk %}">{{ news.title }}</a>
-            ({{ news.author.user.username }}) - {{ news.created_at|date:"Y-m-d H:i" }}
-        </li>
-    {% empty %}
-        <li>Ничего не найдено</li>
-    {% endfor %}
-</ul>
+    .search-container h1 {
+        text-align: center;
+        color: #2a9df4;
+        margin-bottom: 25px;
+    }
 
-<div class="pagination">
-    {% if page_obj.has_previous %}
-        <a href="?page=1{% if base_query %}&{{ base_query }}{% endif %}">&laquo; Первая</a>
-        <a href="?page={{ page_obj.previous_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">&lsaquo; Предыдущая</a>
-    {% else %}
-        <span class="disabled">&laquo; Первая</span>
-        <span class="disabled">&lsaquo; Предыдущая</span>
-    {% endif %}
+    form {
+        margin-bottom: 20px;
+    }
 
-    {% for num in page_obj.paginator.page_range %}
-        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
-            {% if num == page_obj.number %}
-                <strong>{{ num }}</strong>
-            {% else %}
-                <a href="?page={{ num }}{% if base_query %}&{{ base_query }}{% endif %}">{{ num }}</a>
-            {% endif %}
+    form input, form select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1.5px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+
+    form input:focus, form select:focus {
+        border-color: #2a9df4;
+        outline: none;
+    }
+
+    button[type="submit"] {
+        background-color: #2a9df4;
+        color: white;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #0077e6;
+    }
+
+    .results-container {
+        margin-top: 20px;
+    }
+
+    .results-container h2 {
+        color: #333;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    ul li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    ul li a {
+        text-decoration: none;
+        color: #2a9df4;
+    }
+
+    ul li a:hover {
+        text-decoration: underline;
+    }
+
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        margin: 0 5px;
+        text-decoration: none;
+        color: #2a9df4;
+    }
+
+    .pagination span.disabled {
+        color: #ccc;
+    }
+</style>
+
+<div class="search-container">
+    <h1>{% trans "Поиск новостей" %}</h1>
+    <form method="get">
+        {{ filter.form.as_p }}
+        <button type="submit">{% trans "Искать" %}</button>
+    </form>
+    <div class="results-container">
+        <h2>{% trans "Результаты поиска" %}</h2>
+        <ul>
+            {% for news in news_list %}
+                <li>
+                    <a href="{% url 'news_detail' news.pk %}">{{ news.title }}</a>
+                    ({{ news.author.user.username }}) - {{ news.created_at|date:"Y-m-d H:i" }}
+                </li>
+            {% empty %}
+                <li>{% trans "Ничего не найдено" %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if base_query %}&{{ base_query }}{% endif %}">&laquo; {% trans "Первая" %}</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">&lsaquo; {% trans "Предыдущая" %}</a>
+        {% else %}
+            <span class="disabled">&laquo; {% trans "Первая" %}</span>
+            <span class="disabled">&lsaquo; {% trans "Предыдущая" %}</span>
         {% endif %}
-    {% endfor %}
-
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">Следующая &rsaquo;</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% if base_query %}&{{ base_query }}{% endif %}">Последняя &raquo;</a>
-    {% else %}
-        <span class="disabled">Следующая &rsaquo;</span>
-        <span class="disabled">Последняя &raquo;</span>
-    {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+                {% if num == page_obj.number %}
+                    <strong>{{ num }}</strong>
+                {% else %}
+                    <a href="?page={{ num }}{% if base_query %}&{{ base_query }}{% endif %}">{{ num }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if base_query %}&{{ base_query }}{% endif %}">{% trans "Следующая" %} &rsaquo;</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if base_query %}&{{ base_query }}{% endif %}">{% trans "Последняя" %} &raquo;</a>
+        {% else %}
+            <span class="disabled">{% trans "Следующая" %} &rsaquo;</span>
+            <span class="disabled">{% trans "Последняя" %} &raquo;</span>
+        {% endif %}
+    </div>
 </div>
+{% endblock %}

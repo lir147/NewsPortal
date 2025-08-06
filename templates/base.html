@@ -1,6 +1,5 @@
 {% load cache %}
 {% load i18n %}
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,7 +12,6 @@
             margin: 0;
             padding: 0;
         }
-
         nav {
             background-color: #2a9df4;
             padding: 15px 30px;
@@ -23,7 +21,6 @@
             color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
         nav a {
             color: white;
             margin-right: 20px;
@@ -31,16 +28,13 @@
             font-weight: bold;
             transition: color 0.3s ease;
         }
-
         nav a:hover {
             color: #ffdd57;
         }
-
         nav .user-greeting {
             margin-right: 20px;
             font-weight: normal;
         }
-
         main {
             max-width: 900px;
             margin: 30px auto;
@@ -50,32 +44,27 @@
             border-radius: 6px;
             min-height: 400px;
         }
-
         .messages {
             list-style: none;
             padding: 0;
             margin-bottom: 20px;
         }
-
         .messages li {
             padding: 10px 15px;
             border-radius: 4px;
             margin-bottom: 10px;
             font-size: 14px;
         }
-
         .messages li.error {
             background-color: #f8d7da;
             color: #842029;
             border: 1px solid #f5c2c7;
         }
-
         .messages li.success {
             background-color: #d1e7dd;
             color: #0f5132;
             border: 1px solid #badbcc;
         }
-
         .messages li.warning {
             background-color: #fff3cd;
             color: #664d03;
@@ -97,6 +86,16 @@
             {% endif %}
             {% endcache %}
         </div>
+        <!-- Выбор языка -->
+        <div class="language-selector">
+            <form action="{% url 'set_language' %}" method="POST">
+                {% csrf_token %}
+                <select name="language" onchange="this.form.submit()">
+                    <option value="ru" {% if LANGUAGE_CODE == 'ru' %}selected{% endif %}>Русский</option>
+                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+                </select>
+            </form>
+        </div>
     </nav>
     <main>
         {% if messages %}
@@ -107,7 +106,6 @@
           </ul>
         {% endif %}
         {% block content %}
-        <!-- Контент страниц -->
         {% endblock %}
     </main>
 </body>
