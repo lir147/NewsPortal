@@ -1,13 +1,14 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse  # импортируем reverse
+from django.utils.translation import gettext as _
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.user.username
+        return self.user.username  # username не переводится, так как это уникальный идентификатор
 
     def update_rating(self):
         post_rating = sum(post.rating * 3 for post in self.posts.all())
@@ -31,8 +32,8 @@ class Subscription(models.Model):
 
 class Post(models.Model):
     POST_TYPE_CHOICES = [
-        ('article', 'Статья'),
-        ('news', 'Новость'),
+        ('article', _('Статья')),
+        ('news', _('Новость')),
     ]
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posts')
     post_type = models.CharField(max_length=10, choices=POST_TYPE_CHOICES)

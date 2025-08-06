@@ -14,27 +14,28 @@ from .forms import CommentForm, RegisterForm, SubscriptionForm, PostForm
 from django.contrib.auth import login
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.utils.translation import gettext_lazy as _
+
+
 
 
 # Фильтрация постов
 class PostFilter(django_filters.FilterSet):
-    title = django_filters.CharFilter(lookup_expr='icontains', label='Название')
+    title = django_filters.CharFilter(lookup_expr='icontains', label=_('Название'))
     author__user__username = django_filters.CharFilter(
         field_name='author__user__username',
         lookup_expr='icontains',
-        label='Автор'
+        label=_('Автор')
     )
     created_at = django_filters.DateFilter(
         field_name='created_at',
         lookup_expr='gte',
-        label='После даты',
+        label=_('После даты'),
         widget=forms.DateInput(attrs={'type': 'date'})
     )
-
     class Meta:
         model = Post
         fields = ['title', 'author__user__username', 'created_at']
-
 
 # Отписка от категории
 @login_required
@@ -43,11 +44,9 @@ def unsubscribe(request, category_id):
     Subscription.objects.filter(user=request.user, category=category).delete()
     return redirect('manage_subscriptions')
 
-
 @login_required
 def profile_view(request):
     return render(request, 'profile.html')
-
 
 # Управление подписками
 @login_required
@@ -66,23 +65,20 @@ def manage_subscriptions(request):
         form = SubscriptionForm(initial={'categories': initial_cats})
     return render(request, 'subscriptions/manage.html', {'form': form})
 
-
 # Лайк/дизлайк для статей
 @login_required
 @require_POST
 def article_like(request, pk):
     article = get_object_or_404(Post, pk=pk, post_type='article')
-    article.like()      # Используем метод модели
+    article.like()
     return redirect('article_detail', pk=pk)
-
 
 @login_required
 @require_POST
 def article_dislike(request, pk):
     article = get_object_or_404(Post, pk=pk, post_type='article')
-    article.dislike()   # Используем метод модели
+    article.dislike()
     return redirect('article_detail', pk=pk)
-
 
 # Лайк/дизлайк для новостей
 @login_required
@@ -92,14 +88,12 @@ def news_like(request, pk):
     news.like()
     return redirect('news_detail', pk=pk)
 
-
 @login_required
 @require_POST
 def news_dislike(request, pk):
     news = get_object_or_404(Post, pk=pk, post_type='news')
     news.dislike()
     return redirect('news_detail', pk=pk)
-
 
 # Стать автором
 @login_required
@@ -111,8 +105,7 @@ def become_author(request):
         request.user.save()
     return redirect('profile')
 
-
-# Просмотр новости с комментариями (без кэширования для корректной работы CSRF)
+# Просмотр новости с комментариями
 class NewsDetailViewWithComments(View):
     def get(self, request, pk):
         news = get_object_or_404(Post, pk=pk, post_type='news')
@@ -132,8 +125,7 @@ class NewsDetailViewWithComments(View):
         comments = news.comments.all().order_by('-created_at')
         return render(request, 'news/news_detail.html', {'item': news, 'form': form, 'comments': comments})
 
-
-# Главная новостная страница с кэшированием на 60 секунд
+# Главная новостная страница
 @method_decorator(cache_page(60), name='dispatch')
 class NewsListView(ListView):
     model = Post
@@ -143,7 +135,6 @@ class NewsListView(ListView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='news').order_by('-created_at')
-
 
 # Поиск новостей
 class NewsSearchView(FilterView):
@@ -161,7 +152,6 @@ class NewsSearchView(FilterView):
         context['request'] = self.request
         return context
 
-
 # Список статей
 class ArticlesListView(ListView):
     model = Post
@@ -171,7 +161,6 @@ class ArticlesListView(ListView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='article').order_by('-created_at')
-
 
 # Создание новости
 class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -186,7 +175,6 @@ class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
-
 # Обновление новости
 class NewsUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
@@ -198,7 +186,6 @@ class NewsUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
-
 # Удаление новости
 class NewsDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
@@ -208,7 +195,6 @@ class NewsDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
-
 
 # Создание статьи
 class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -223,7 +209,6 @@ class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
-
 # Обновление статьи
 class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
@@ -235,7 +220,6 @@ class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
-
 # Просмотр статьи с кэшированием
 @method_decorator(cache_page(60 * 5), name='dispatch')
 class ArticleDetailView(DetailView):
@@ -246,7 +230,6 @@ class ArticleDetailView(DetailView):
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
-
 # Удаление статьи
 class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
@@ -256,7 +239,6 @@ class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
 
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
-
 
 # Регистрация пользователя
 def register(request):
@@ -273,12 +255,10 @@ def register(request):
         form = RegisterForm()
     return render(request, "register.html", {"form": form})
 
-
-# Детальный просмотр поста (пока без кастомного функционала)
+# Детальный просмотр поста
 class PostDetail(DetailView):
     model = Post
     template_name = 'news/post_detail.html'
-
 
 def csrf_failure(request, reason=""):
     context = {'reason': reason}

@@ -1,27 +1,114 @@
 {% load cache %}
+{% load i18n %}
 
-<nav>
-    {% cache 600 "menu" user.id %}
-    <a href="{% url 'news_list' %}">Новости</a>
-    {% if user.is_authenticated %}
-        <span>Привет, {{ user.username }}!</span>
-        <a href="{% url 'account_logout' %}">Выйти</a>
-    {% else %}
-        <a href="{% url 'account_login' %}">Войти</a>
-        <a href="{% url 'account_signup' %}">Регистрация</a>
-    {% endif %}
-    {% endcache %}
-</nav>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}News Portal{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+        }
 
-<main>
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    {% block content %}
-    <!-- Контент страниц -->
-    {% endblock %}
-</main>
+        nav {
+            background-color: #2a9df4;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            margin-right: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ffdd57;
+        }
+
+        nav .user-greeting {
+            margin-right: 20px;
+            font-weight: normal;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            border-radius: 6px;
+            min-height: 400px;
+        }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .messages li {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .messages li.error {
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        .messages li.success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
+        }
+
+        .messages li.warning {
+            background-color: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffecb5;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            {% cache 600 "menu" user.id %}
+            <a href="{% url 'news_list' %}">{% trans "Новости" %}</a>
+            {% if user.is_authenticated %}
+                <span class="user-greeting">{% trans "Привет," %} {{ user.username }}!</span>
+                <a href="{% url 'account_logout' %}">{% trans "Выйти" %}</a>
+            {% else %}
+                <a href="{% url 'account_login' %}">{% trans "Войти" %}</a>
+                <a href="{% url 'account_signup' %}">{% trans "Регистрация" %}</a>
+            {% endif %}
+            {% endcache %}
+        </div>
+    </nav>
+    <main>
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% block content %}
+        <!-- Контент страниц -->
+        {% endblock %}
+    </main>
+</body>
+</html>

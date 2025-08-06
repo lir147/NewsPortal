@@ -2,26 +2,103 @@
 {% block title %}Вход{% endblock %}
 
 {% block content %}
-<h2>Вход</h2>
+<style>
+  .login-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 30px 25px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+  }
+  .login-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+  }
+  form p, form label {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #555;
+  }
+  form input, form select, form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    border: 1.5px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+  }
+  form input:focus, form select:focus, form textarea:focus {
+    border-color: #2a9df4;
+    outline: none;
+  }
+  .error-messages {
+    background-color: #ffe6e6;
+    border: 1px solid #ff9999;
+    border-radius: 5px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    color: #d8000c;
+    list-style-type: disc;
+    list-style-position: inside;
+  }
+  button[type="submit"] {
+    background-color: #2a9df4;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  button[type="submit"]:hover {
+    background-color: #0077e6;
+  }
+  .register-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  .register-link a {
+    color: #2a9df4;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .register-link a:hover {
+    text-decoration: underline;
+  }
+</style>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
+<div class="login-container">
+  <h2>{% trans "Вход" %}</h2>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
 
-  {% if form.errors %}
-  <ul style="color: red;">
-    {% for field in form %}
-      {% for error in field.errors %}
-        <li>{{ error }}</li>
-      {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-      <li>{{ error }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+    {% if form.errors %}
+      <ul class="error-messages">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
 
-  <button type="submit">Войти</button>
-</form>
-<p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+    <button type="submit">{% trans "Войти" %}</button>
+  </form>
+  <p class="register-link">
+    {% trans "Нет аккаунта?" %} <a href="{% url 'register' %}">{% trans "Зарегистрироваться" %}</a>
+  </p>
+</div>
+
 {% endblock %}
