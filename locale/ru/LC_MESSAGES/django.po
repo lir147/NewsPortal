@@ -10,109 +10,97 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-#: .\news\models.py:35
-msgid "Статья"
-msgstr "Article"  # Статья -> Article
 
-#: .\news\models.py:36
-msgid "Новость"
-msgstr "News"  # Новость -> News
+#: .\news\models.py:35
+msgid "Article"
+msgstr "Статья"
 
 #: .\news\templates\news\news_search.html:103
-msgid "Поиск новостей"
-msgstr "News Search"  # Поиск новостей -> News Search
+msgid "News Search"
+msgstr "Поиск новостей"
 
 #: .\news\templates\news\news_search.html:106
-msgid "Искать"
-msgstr "Search"  # Искать -> Search
+msgid "Search"
+msgstr "Искать"
 
 #: .\news\templates\news\news_search.html:109
-msgid "Результаты поиска"
-msgstr "Search Results"  # Результаты поиска -> Search Results
+msgid "Search Results"
+msgstr "Результаты поиска"
 
 #: .\news\templates\news\news_search.html:117
-msgid "Ничего не найдено"
-msgstr "Nothing found"  # Ничего не найдено -> Nothing found
+msgid "Nothing found"
+msgstr "Ничего не найдено"
 
 #: .\news\templates\news\news_search.html:123
-#: .\news\templates\news\news_search.html:126
-msgid "Первая"
-msgstr "First"  # Первая -> First
+msgid "First"
+msgstr "Первая"
 
 #: .\news\templates\news\news_search.html:124
-#: .\news\templates\news\news_search.html:127
-msgid "Предыдущая"
-msgstr "Previous"  # Предыдущая -> Previous
+msgid "Previous"
+msgstr "Предыдущая"
 
 #: .\news\templates\news\news_search.html:139
-#: .\news\templates\news\news_search.html:142
-msgid "Следующая"
-msgstr "Next"  # Следующая -> Next
+msgid "Next"
+msgstr "Следующая"
 
 #: .\news\templates\news\news_search.html:140
-#: .\news\templates\news\news_search.html:143
-#, fuzzy
-#| msgid "После даты"
-msgid "Последняя"
-msgstr "Last"  # Последняя -> Last
+msgid "Last"
+msgstr "Последняя"
 
 #: .\news\views.py:24
-msgid "Название"
-msgstr "Title"  # Название -> Title
+msgid "Title"
+msgstr "Название"
 
 #: .\news\views.py:28
-msgid "Автор"
-msgstr "Author"  # Автор -> Author
+msgid "Author"
+msgstr "Автор"
 
 #: .\news\views.py:33
-msgid "После даты"
-msgstr "After date"  # После даты -> After date
+msgid "After date"
+msgstr "После даты"
 
 #: .\templates\base.html:79
-msgid "Новости"
-msgstr "News"  # Новости -> News
+msgid "News"
+msgstr "Новости"
 
 #: .\templates\base.html:81 .\templates\profile.html:29
-msgid "Привет,"
-msgstr "Hello,"  # Привет -> Hello
+msgid "Hello,"
+msgstr "Привет,"
 
 #: .\templates\base.html:82
-msgid "Выйти"
-msgstr "Logout"  # Выйти -> Logout
+msgid "Logout"
+msgstr "Выйти"
 
 #: .\templates\base.html:84 .\templates\login.html:97
 #: .\templates\register.html:98 .\templates\signup.html:110
-msgid "Войти"
-msgstr "Login"  # Войти -> Login
+msgid "Login"
+msgstr "Войти"
 
 #: .\templates\base.html:85 .\templates\register.html:77
-#: .\templates\signup.html:89
-msgid "Регистрация"
-msgstr "Registration"  # Регистрация -> Registration
+msgid "Registration"
+msgstr "Регистрация"
 
 #: .\templates\login.html:79
-msgid "Вход"
-msgstr "Sign In"  # Вход -> Sign In
+msgid "Sign In"
+msgstr "Вход"
 
 #: .\templates\login.html:100
-msgid "Нет аккаунта?"
-msgstr "No account?"  # Нет аккаунта? -> No account?
+msgid "No account?"
+msgstr "Нет аккаунта?"
 
 #: .\templates\login.html:100 .\templates\register.html:95
 #: .\templates\signup.html:107
-#, fuzzy
-#| msgid "Регистрация"
-msgid "Зарегистрироваться"
-msgstr "Register"  # Зарегистрироваться -> Register
+msgid "Register"
+msgstr "Зарегистрироваться"
 
 #: .\templates\profile.html:28
-msgid "Профиль пользователя"
-msgstr "User Profile"  # Профиль пользователя -> User Profile
+msgid "User Profile"
+msgstr "Профиль пользователя"
 
 #: .\templates\profile.html:30
-msgid "Это ваша личная страница."
-msgstr "This is your personal page."  # Это ваша личная страница. -> This is your personal page.
+msgid "This is your personal page."
+msgstr "Это ваша личная страница."
 
 #: .\templates\register.html:98 .\templates\signup.html:110
-msgid "Уже есть аккаунт?"
-msgstr "Already have an account?"  # Уже есть аккаунт? -> Already have an account?
+msgid "Already have an account?"
+msgstr "Уже есть аккаунт?"
