@@ -382,3 +382,494 @@ Traceback (most recent call last):
 django.urls.exceptions.NoReverseMatch: Reverse for 'account_logout' not found. 'account_logout' is not a valid view function or pattern name.
 2025-08-11 20:31:33 ERROR "GET /news/ HTTP/1.1" 500 188984 C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\servers\basehttp.py
 None
+2025-08-11 20:57:09 ERROR Internal Server Error: / C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 244, in _get_session
+    return self._session_cache
+           ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SessionStore' object has no attribute '_session_cache'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 357, in connect
+    sock = self.retry.call_with_retry(
+        lambda: self._connect(), lambda error: self.disconnect(error)
+    )
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\retry.py", line 62, in call_with_retry
+    return do()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 358, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)
+            ~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 730, in _connect
+    raise err
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 718, in _connect
+    sock.connect(socket_address)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+ConnectionRefusedError: [WinError 10061] Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\news\middleware.py", line 7, in process_request
+    if hasattr(request.user, 'userprofile'):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 251, in inner
+    self._setup()
+    ~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 404, in _setup
+    self._wrapped = self._setupfunc()
+                    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 40, in <lambda>
+    request.user = SimpleLazyObject(lambda: get_user(request))
+                                            ~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 20, in get_user
+    request._cached_user = auth.get_user(request)
+                           ~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 304, in get_user
+    user_id = _get_user_session_key(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 95, in _get_user_session_key
+    return get_user_model()._meta.pk.to_python(request.session[SESSION_KEY])
+                                               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 55, in __getitem__
+    return self._session[key]
+           ^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 249, in _get_session
+    self._session_cache = self.load()
+                          ~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\cached_db.py", line 46, in load
+    self._cache.set(
+    ~~~~~~~~~~~~~~~^
+        self.cache_key, data, self.get_expiry_age(expiry=s.expire_date)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 192, in set
+    self._cache.set(key, value, self.get_backend_timeout(timeout))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 109, in set
+    client.set(key, value, ex=timeout)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\commands\core.py", line 2335, in set
+    return self.execute_command("SET", *pieces, **options)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to 127.0.0.1:6379. Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение.
+2025-08-11 20:57:34 ERROR Internal Server Error: /52/ C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 244, in _get_session
+    return self._session_cache
+           ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SessionStore' object has no attribute '_session_cache'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 357, in connect
+    sock = self.retry.call_with_retry(
+        lambda: self._connect(), lambda error: self.disconnect(error)
+    )
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\retry.py", line 62, in call_with_retry
+    return do()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 358, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)
+            ~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 730, in _connect
+    raise err
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 718, in _connect
+    sock.connect(socket_address)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+ConnectionRefusedError: [WinError 10061] Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\news\middleware.py", line 7, in process_request
+    if hasattr(request.user, 'userprofile'):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 251, in inner
+    self._setup()
+    ~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 404, in _setup
+    self._wrapped = self._setupfunc()
+                    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 40, in <lambda>
+    request.user = SimpleLazyObject(lambda: get_user(request))
+                                            ~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 20, in get_user
+    request._cached_user = auth.get_user(request)
+                           ~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 304, in get_user
+    user_id = _get_user_session_key(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 95, in _get_user_session_key
+    return get_user_model()._meta.pk.to_python(request.session[SESSION_KEY])
+                                               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 55, in __getitem__
+    return self._session[key]
+           ^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 249, in _get_session
+    self._session_cache = self.load()
+                          ~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\cached_db.py", line 46, in load
+    self._cache.set(
+    ~~~~~~~~~~~~~~~^
+        self.cache_key, data, self.get_expiry_age(expiry=s.expire_date)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 192, in set
+    self._cache.set(key, value, self.get_backend_timeout(timeout))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 109, in set
+    client.set(key, value, ex=timeout)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\commands\core.py", line 2335, in set
+    return self.execute_command("SET", *pieces, **options)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to 127.0.0.1:6379. Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение.
+2025-08-11 20:57:37 ERROR Internal Server Error: /52/ C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 244, in _get_session
+    return self._session_cache
+           ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SessionStore' object has no attribute '_session_cache'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 357, in connect
+    sock = self.retry.call_with_retry(
+        lambda: self._connect(), lambda error: self.disconnect(error)
+    )
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\retry.py", line 62, in call_with_retry
+    return do()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 358, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)
+            ~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 730, in _connect
+    raise err
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 718, in _connect
+    sock.connect(socket_address)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+ConnectionRefusedError: [WinError 10061] Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\news\middleware.py", line 7, in process_request
+    if hasattr(request.user, 'userprofile'):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 251, in inner
+    self._setup()
+    ~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 404, in _setup
+    self._wrapped = self._setupfunc()
+                    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 40, in <lambda>
+    request.user = SimpleLazyObject(lambda: get_user(request))
+                                            ~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 20, in get_user
+    request._cached_user = auth.get_user(request)
+                           ~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 304, in get_user
+    user_id = _get_user_session_key(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 95, in _get_user_session_key
+    return get_user_model()._meta.pk.to_python(request.session[SESSION_KEY])
+                                               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 55, in __getitem__
+    return self._session[key]
+           ^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 249, in _get_session
+    self._session_cache = self.load()
+                          ~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\cached_db.py", line 46, in load
+    self._cache.set(
+    ~~~~~~~~~~~~~~~^
+        self.cache_key, data, self.get_expiry_age(expiry=s.expire_date)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 192, in set
+    self._cache.set(key, value, self.get_backend_timeout(timeout))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 109, in set
+    client.set(key, value, ex=timeout)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\commands\core.py", line 2335, in set
+    return self.execute_command("SET", *pieces, **options)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to 127.0.0.1:6379. Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение.
+2025-08-11 20:57:43 ERROR Internal Server Error: / C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 244, in _get_session
+    return self._session_cache
+           ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SessionStore' object has no attribute '_session_cache'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 357, in connect
+    sock = self.retry.call_with_retry(
+        lambda: self._connect(), lambda error: self.disconnect(error)
+    )
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\retry.py", line 62, in call_with_retry
+    return do()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 358, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)
+            ~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 730, in _connect
+    raise err
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 718, in _connect
+    sock.connect(socket_address)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+ConnectionRefusedError: [WinError 10061] Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\news\middleware.py", line 7, in process_request
+    if hasattr(request.user, 'userprofile'):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 251, in inner
+    self._setup()
+    ~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 404, in _setup
+    self._wrapped = self._setupfunc()
+                    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 40, in <lambda>
+    request.user = SimpleLazyObject(lambda: get_user(request))
+                                            ~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\middleware.py", line 20, in get_user
+    request._cached_user = auth.get_user(request)
+                           ~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 304, in get_user
+    user_id = _get_user_session_key(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 95, in _get_user_session_key
+    return get_user_model()._meta.pk.to_python(request.session[SESSION_KEY])
+                                               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 55, in __getitem__
+    return self._session[key]
+           ^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\base.py", line 249, in _get_session
+    self._session_cache = self.load()
+                          ~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\contrib\sessions\backends\cached_db.py", line 46, in load
+    self._cache.set(
+    ~~~~~~~~~~~~~~~^
+        self.cache_key, data, self.get_expiry_age(expiry=s.expire_date)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 192, in set
+    self._cache.set(key, value, self.get_backend_timeout(timeout))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\cache\backends\redis.py", line 109, in set
+    client.set(key, value, ex=timeout)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\commands\core.py", line 2335, in set
+    return self.execute_command("SET", *pieces, **options)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+                              ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to 127.0.0.1:6379. Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение.
+2025-08-11 20:57:43 ERROR "GET / HTTP/1.1" 500 171970 C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\servers\basehttp.py
+None
+2025-08-11 21:00:48 ERROR Internal Server Error: / C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\module_loading.py", line 30, in import_string
+    return cached_import(module_path, class_name)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\module_loading.py", line 16, in cached_import
+    return getattr(module, class_name)
+AttributeError: module 'news.context_processors' has no attribute 'theme_context'. Did you mean: 'timezone_context'?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\base.py", line 169, in render
+    with context.bind_template(self):
+         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\kores\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\context.py", line 256, in bind_template
+    processors = template.engine.template_context_processors + self._processors
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\engine.py", line 118, in template_context_processors
+    return tuple(import_string(path) for path in context_processors)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\engine.py", line 118, in <genexpr>
+    return tuple(import_string(path) for path in context_processors)
+                 ~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\module_loading.py", line 32, in import_string
+    raise ImportError(
+    ...<2 lines>...
+    ) from err
+ImportError: Module "news.context_processors" does not define a "theme_context" attribute/class
+2025-08-11 21:00:48 ERROR "GET / HTTP/1.1" 500 129915 C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\servers\basehttp.py
+None
+2025-08-11 21:04:53 ERROR Internal Server Error: / C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\base.py", line 169, in render
+    with context.bind_template(self):
+         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\kores\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\context.py", line 259, in bind_template
+    context = processor(self.request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\news\context_processors.py", line 7, in timezone_context
+    'timezones': pytz.all_timezones,
+                 ^^^^
+NameError: name 'pytz' is not defined
+2025-08-11 21:04:53 ERROR "GET / HTTP/1.1" 500 105269 C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\servers\basehttp.py
+None
+2025-08-11 21:04:54 ERROR Internal Server Error: / C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\base.py", line 169, in render
+    with context.bind_template(self):
+         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\kores\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\context.py", line 259, in bind_template
+    context = processor(self.request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\news\context_processors.py", line 7, in timezone_context
+    'timezones': pytz.all_timezones,
+                 ^^^^
+NameError: name 'pytz' is not defined
+2025-08-11 21:04:54 ERROR "GET / HTTP/1.1" 500 105269 C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\servers\basehttp.py
+None
+2025-08-11 21:06:32 ERROR Internal Server Error: / C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\utils\log.py
+None
+Traceback (most recent call last):
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\base.py", line 169, in render
+    with context.bind_template(self):
+         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\kores\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\template\context.py", line 259, in bind_template
+    context = processor(self.request)
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\news\context_processors.py", line 14, in theme_context
+    'current_theme': request.session.get('theme', settings.DEFAULT_THEME),
+                                                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\conf\__init__.py", line 83, in __getattr__
+    val = getattr(_wrapped, name)
+AttributeError: 'Settings' object has no attribute 'DEFAULT_THEME'. Did you mean: 'DEFAULT_CHARSET'?
+2025-08-11 21:06:32 ERROR "GET / HTTP/1.1" 500 118956 C:\Users\kores\PycharmProjects\NewSite\NewsSite\venv\Lib\site-packages\django\core\servers\basehttp.py
+None
