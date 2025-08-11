@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 20:25+0500\n"
+"POT-Creation-Date: 2025-08-08 23:08+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,205 +16,95 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: .\NewsSite\asgi.py:5
-msgid "Добро пожаловать в NewsSite!"
-msgstr ""
-
-#: .\NewsSite\urls.py:16 .\news\urls.py:18
-msgid "news/"
-msgstr ""
-
-#: .\news\models.py:53
-msgid "Статья"
-msgstr ""
-
-#: .\news\models.py:54
-msgid "Новость"
-msgstr ""
-
+msgid "Welcome to NewsSite!"
+msgstr "Добро пожаловать в NewsSite!"
+#: .\news\models.py:35
+msgid "Article"
+msgstr "Статья"
+#: .\news\models.py:36
+msgid "News"
+msgstr "Новость"
 #: .\news\templates\news\news_search.html:103
-msgid "Поиск новостей"
-msgstr ""
-
+msgid "News Search"
+msgstr "Поиск новостей"
 #: .\news\templates\news\news_search.html:106
-msgid "Искать"
-msgstr ""
-
+msgid "Search"
+msgstr "Искать"
 #: .\news\templates\news\news_search.html:109
-msgid "Результаты поиска"
-msgstr ""
-
+msgid "Search Results"
+msgstr "Результаты поиска"
 #: .\news\templates\news\news_search.html:117
-msgid "Ничего не найдено"
-msgstr ""
-
+msgid "Nothing Found"
+msgstr "Ничего не найдено"
 #: .\news\templates\news\news_search.html:123
 #: .\news\templates\news\news_search.html:126
-msgid "Первая"
-msgstr ""
-
+msgid "First"
+msgstr "Первая"
 #: .\news\templates\news\news_search.html:124
 #: .\news\templates\news\news_search.html:127
-msgid "Предыдущая"
-msgstr ""
-
+msgid "Previous"
+msgstr "Предыдущая"
 #: .\news\templates\news\news_search.html:139
 #: .\news\templates\news\news_search.html:142
-msgid "Следующая"
-msgstr ""
-
+msgid "Next"
+msgstr "Следующая"
 #: .\news\templates\news\news_search.html:140
 #: .\news\templates\news\news_search.html:143
-msgid "Последняя"
-msgstr ""
-
-#: .\news\urls.py:17
-msgid "accounts/register/"
-msgstr ""
-
-#: .\news\urls.py:19
-msgid "news/search/"
-msgstr ""
-
-#: .\news\urls.py:20
-msgid "news/create/"
-msgstr ""
-
-#: .\news\urls.py:21
-msgid "news/<int:pk>/edit/"
-msgstr ""
-
-#: .\news\urls.py:22
-msgid "news/<int:pk>/delete/"
-msgstr ""
-
-#: .\news\urls.py:23
-msgid "news/<int:pk>/"
-msgstr ""
-
-#: .\news\urls.py:24
-msgid "news/<int:pk>/like/"
-msgstr ""
-
-#: .\news\urls.py:25
-msgid "news/<int:pk>/dislike/"
-msgstr ""
-
-#: .\news\urls.py:27
-msgid "articles/"
-msgstr ""
-
-#: .\news\urls.py:28
-msgid "articles/create/"
-msgstr ""
-
-#: .\news\urls.py:29
-msgid "articles/<int:pk>/edit/"
-msgstr ""
-
-#: .\news\urls.py:30
-msgid "articles/<int:pk>/delete/"
-msgstr ""
-
-#: .\news\urls.py:31
-msgid "articles/<int:pk>/"
-msgstr ""
-
-#: .\news\urls.py:32
-msgid "articles/<int:pk>/like/"
-msgstr ""
-
-#: .\news\urls.py:33
-msgid "articles/<int:pk>/dislike/"
-msgstr ""
-
-#: .\news\urls.py:35
-msgid "become-author/"
-msgstr ""
-
-#: .\news\urls.py:36
-msgid "subscriptions/"
-msgstr ""
-
-#: .\news\urls.py:37
-msgid "unsubscribe/<int:category_id>/"
-msgstr ""
-
-#: .\news\urls.py:38
-msgid "profile/"
-msgstr ""
-
-#: .\news\views.py:53
-msgid "Название"
-msgstr ""
-
-#: .\news\views.py:57
-msgid "Автор"
-msgstr ""
-
-#: .\news\views.py:62
-msgid "После даты"
-msgstr ""
-
-#: .\templates\base.html:113
-msgid "Новости"
-msgstr ""
-
-#: .\templates\base.html:115
-msgid "Привет,"
-msgstr ""
-
-#: .\templates\base.html:116
-msgid "Выйти"
-msgstr ""
-
-#: .\templates\base.html:118 .\templates\login.html:97
-#: .\templates\register.html:98 .\templates\signup.html:110
-msgid "Войти"
-msgstr ""
-
-#: .\templates\base.html:119 .\templates\register.html:77
+msgid "Last"
+msgstr "Последняя"
+#: .\news\views.py:24
+msgid "Title"
+msgstr "Название"
+#: .\news\views.py:28
+msgid "Author"
+msgstr "Автор"
+#: .\news\views.py:33
+msgid "After Date"
+msgstr "После даты"
+#: .\templates\base.html:79
+msgid "News"
+msgstr "Новости"
+#: .\templates\base.html:81
+#: .\templates\profile.html:29
+msgid "Hello,"
+msgstr "Привет,"
+#: .\templates\base.html:82
+msgid "Logout"
+msgstr "Выйти"
+#: .\templates\base.html:84
+#: .\templates\login.html:97
+#: .\templates\register.html:98
+#: .\templates\signup.html:110
+msgid "Login"
+msgstr "Войти"
+#: .\templates\base.html:85
+#: .\templates\register.html:77
 #: .\templates\signup.html:89
-msgid "Регистрация"
-msgstr ""
-
-#: .\templates\base.html:130 .\templates\base.html:200
-msgid "Светлая тема"
-msgstr ""
-
-#: .\templates\base.html:132 .\templates\base.html:202
-msgid "Тёмная тема"
-msgstr ""
-
+msgid "Register"
+msgstr "Регистрация"
 #: .\templates\login.html:79
-msgid "Вход"
-msgstr ""
-
+msgid "Login"
+msgstr "Вход"
 #: .\templates\login.html:100
-msgid "Нет аккаунта?"
-msgstr ""
-
-#: .\templates\login.html:100 .\templates\register.html:95
+msgid "No account?"
+msgstr "Нет аккаунта?"
+#: .\templates\login.html:100
+#: .\templates\register.html:95
 #: .\templates\signup.html:107
-msgid "Зарегистрироваться"
-msgstr ""
-
+msgid "Sign up"
+msgstr "Зарегистрироваться"
+#: .\templates\profile.html:28
+msgid "User  Profile"
+msgstr "Профиль пользователя"
 #: .\templates\profile.html:30
-msgid "Профиль пользователя"
-msgstr ""
-
-#: .\templates\profile.html:31
-#, python-format
-msgid "Привет, %(request.user.username)s!"
-msgstr ""
-
-#: .\templates\profile.html:32
-msgid "Это ваша личная страница."
-msgstr ""
-
-#: .\templates\register.html:98 .\templates\signup.html:110
-msgid "Уже есть аккаунт?"
-msgstr ""
-
+msgid "This is your personal page."
+msgstr "Это ваша личная страница."
+#: .\templates\register.html:98
+#: .\templates\signup.html:110
+msgid "Already have an account?"
+msgstr "Уже есть аккаунт?"
