@@ -15,8 +15,37 @@ from django.contrib.auth import login
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext_lazy as _
+from django.shortcuts import redirect
+from django.utils import timezone
+import pytz
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect
+from django.http import JsonResponse
 
 
+def toggle_theme(request):
+    if 'dark_mode' not in request.session:
+        request.session['dark_mode'] = True
+    else:
+        request.session['dark_mode'] = not request.session['dark_mode']
+
+    # Для AJAX-запросов возвращаем JSON
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'dark_mode': request.session['dark_mode']})
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def set_timezone(request):
+    if request.method == 'POST':
+        tz = request.POST.get('timezone')
+        if tz in pytz.all_timezones:
+            request.session['django_timezone'] = tz
+            if hasattr(request.user, 'userprofile'):
+                request.user.userprofile.timezone = tz
+                request.user.userprofile.save()
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponseBadRequest("Invalid timezone")
 
 
 # Фильтрация постов

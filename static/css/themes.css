@@ -1,0 +1,11 @@
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+.dark-theme nav {
+    background-color: #0d47a1;
+}
+.light-theme {
+    background-color: #ffffff;
+    color: #000000;
+}

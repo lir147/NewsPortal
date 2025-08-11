@@ -1,5 +1,6 @@
 {% load cache %}
 {% load i18n %}
+{% load tz %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,9 +9,17 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f7f9;
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .light-theme {
+            background-color: #f4f7f9;
+            color: #333;
+        }
+        .dark-theme {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
         }
         nav {
             background-color: #2a9df4;
@@ -20,6 +29,9 @@
             align-items: center;
             color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .dark-theme nav {
+            background-color: #0d47a1;
         }
         nav a {
             color: white;
@@ -43,6 +55,11 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
             border-radius: 6px;
             min-height: 400px;
+            transition: background-color 0.3s;
+        }
+        .dark-theme main {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
         }
         .messages {
             list-style: none;
@@ -70,9 +87,26 @@
             color: #664d03;
             border: 1px solid #ffecb5;
         }
+        .theme-switcher {
+            margin-left: 20px;
+        }
+        .theme-switcher button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .timezone-selector {
+            margin-left: 20px;
+        }
+        .timezone-selector select {
+            padding: 5px;
+            border-radius: 4px;
+        }
     </style>
 </head>
-<body>
+<body class="{% if request.session.dark_mode %}dark-theme{% else %}light-theme{% endif %}">
     <nav>
         <div>
             {% cache 600 "menu" user.id LANGUAGE_CODE %}
@@ -86,22 +120,51 @@
             {% endif %}
             {% endcache %}
         </div>
-        <!-- Выбор языка -->
-        <div class="language-selector">
-    <form action="{% url 'set_language' %}" method="POST"> {% csrf_token %} <!-- Не забываем по csrf_token для POST запросов -->
-        <input type="hidden" name="next" value="{{ redirect_to }}">
-        <select name="language" id="">
-        {% get_available_languages as LANGUAGES %} <!-- получаем языки -->
-        {% get_language_info_list for LANGUAGES as languages %} <!-- Помещаем их в список languages -->
-        {% get_current_language as LANGUAGE_CODE %}
-        {% for language in languages %} <!-- Итерируясь по списку, выводим их название на языке пользователя и код -->
-            <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
-                {{ language.name_local }} - {{ language.code }}
-            </option>
-        {% endfor %}
-        </select>
-        <input type="submit" value="set">
-</form>
+        <div style="display: flex; align-items: center;">
+            <!-- Переключатель темы -->
+            <div class="theme-switcher">
+                <form action="{% url 'toggle_theme' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">
+                        {% if request.session.dark_mode %}
+                            ☀️ {% trans "Светлая тема" %}
+                        {% else %}
+                            🌙 {% trans "Тёмная тема" %}
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+
+            <!-- Выбор часового пояса -->
+            <div class="timezone-selector">
+                <form action="{% url 'set_timezone' %}" method="POST">
+                    {% csrf_token %}
+                    <select name="timezone" onchange="this.form.submit()">
+                        {% for tz in timezones %}
+                            <option value="{{ tz }}" {% if tz == request.session.django_timezone %}selected{% endif %}>
+                                {{ tz }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <!-- Выбор языка -->
+            <div class="language-selector">
+                <form action="{% url 'set_language' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ redirect_to }}">
+                    <select name="language" onchange="this.form.submit()">
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                            <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}selected{% endif %}>
+                                {{ language.name_local }} ({{ language.code }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
         </div>
     </nav>
     <main>
@@ -115,5 +178,31 @@
         {% block content %}
         {% endblock %}
     </main>
+
+    <script>
+        // AJAX для переключения темы без перезагрузки
+        document.querySelector('.theme-switcher form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch("{% url 'toggle_theme' %}", {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.body.classList.toggle('dark-theme', data.dark_mode);
+                document.body.classList.toggle('light-theme', !data.dark_mode);
+                // Обновляем текст кнопки
+                const button = document.querySelector('.theme-switcher button');
+                if (data.dark_mode) {
+                    button.innerHTML = '☀️ {% trans "Светлая тема" %}';
+                } else {
+                    button.innerHTML = '🌙 {% trans "Тёмная тема" %}';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

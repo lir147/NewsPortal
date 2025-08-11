@@ -2,6 +2,13 @@ from django import forms
 from .models import Post, Comment, Category
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+import pytz
+
+class TimezoneForm(forms.Form):
+    timezone = forms.ChoiceField(
+        choices=[(tz, tz) for tz in pytz.all_timezones],
+        label="Выберите часовой пояс"
+    )
 
 
 class SubscriptionForm(forms.Form):

@@ -169,6 +169,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'news_portal.middleware.TimezoneMiddleware',
 
 ]
 
@@ -266,3 +267,7 @@ CACHES = {
 }
 
 CSRF_FAILURE_VIEW = 'news.views.csrf_failure'
+
+USE_TZ = True
+TIME_ZONE = 'Europe/Moscow'
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
