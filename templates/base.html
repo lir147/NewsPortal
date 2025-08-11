@@ -75,7 +75,7 @@
 <body>
     <nav>
         <div>
-            {% cache 600 "menu" user.id %}
+            {% cache 600 "menu" user.id LANGUAGE_CODE %}
             <a href="{% url 'news_list' %}">{% trans "Новости" %}</a>
             {% if user.is_authenticated %}
                 <span class="user-greeting">{% trans "Привет," %} {{ user.username }}!</span>
@@ -88,13 +88,20 @@
         </div>
         <!-- Выбор языка -->
         <div class="language-selector">
-            <form action="{% url 'set_language' %}" method="POST">
-                {% csrf_token %}
-                <select name="language" onchange="this.form.submit()">
-                    <option value="ru" {% if LANGUAGE_CODE == 'ru' %}selected{% endif %}>Русский</option>
-                    <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-                </select>
-            </form>
+    <form action="{% url 'set_language' %}" method="POST"> {% csrf_token %} <!-- Не забываем по csrf_token для POST запросов -->
+        <input type="hidden" name="next" value="{{ redirect_to }}">
+        <select name="language" id="">
+        {% get_available_languages as LANGUAGES %} <!-- получаем языки -->
+        {% get_language_info_list for LANGUAGES as languages %} <!-- Помещаем их в список languages -->
+        {% get_current_language as LANGUAGE_CODE %}
+        {% for language in languages %} <!-- Итерируясь по списку, выводим их название на языке пользователя и код -->
+            <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
+                {{ language.name_local }} - {{ language.code }}
+            </option>
+        {% endfor %}
+        </select>
+        <input type="submit" value="set">
+</form>
         </div>
     </nav>
     <main>

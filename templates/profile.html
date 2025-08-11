@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load i18n %}  <!-- Добавлена загрузка тегов перевода -->
+
 {% block content %}
 <style>
   .profile-container {
@@ -26,7 +28,7 @@
 
 <div class="profile-container">
   <h1>{% trans "Профиль пользователя" %}</h1>
-  <p>{% trans "Привет," %} {{ request.user.username }}!</p>
+  <p>{% blocktrans %}Привет, {{ request.user.username }}!{% endblocktrans %}</p>
   <p>{% trans "Это ваша личная страница." %}</p>
 </div>
 {% endblock %}

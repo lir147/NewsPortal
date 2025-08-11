@@ -19,6 +19,7 @@ urlpatterns = [
     path('news/<int:pk>/like/', news_like, name='news_like'),
     path('news/<int:pk>/dislike/', news_dislike, name='news_dislike'),
 
+
     # Стать автором
     path('become-author/', become_author, name='become_author'),
 
