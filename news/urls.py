@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from . import views
 
 urlpatterns = [
+    path('accounts/logout/', views.custom_logout, name='account_logout'),
     path('', views.NewsListView.as_view(), name='news_list'),
     path('search/', views.NewsSearchView.as_view(), name='news_search'),
     path('create/', views.NewsCreateView.as_view(), name='news_create'),

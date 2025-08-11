@@ -5,7 +5,6 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
-from django.utils import timezone
 import django_filters
 from django_filters.views import FilterView
 from django import forms
@@ -15,12 +14,16 @@ from django.contrib.auth import login
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import redirect
 from django.utils import timezone
 import pytz
 from django.http import HttpResponseBadRequest
-from django.shortcuts import redirect
 from django.http import JsonResponse
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+def custom_logout(request):
+    logout(request)
+    return redirect('news_list')
 
 
 def toggle_theme(request):
