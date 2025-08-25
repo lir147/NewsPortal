@@ -20,6 +20,14 @@ from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import (
+    NewsSerializer, ArticleSerializer, CommentSerializer,
+    CategorySerializer, PostCreateSerializer, UserSerializer
+)
 
 def custom_logout(request):
     logout(request)
@@ -295,3 +303,155 @@ class PostDetail(DetailView):
 def csrf_failure(request, reason=""):
     context = {'reason': reason}
     return render(request, 'csrf_failure.html', context)
+
+
+# REST API Viewsets
+class NewsViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Post.objects.filter(post_type='news', is_published=True)
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return PostCreateSerializer
+        return NewsSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, post_type='news')
+
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        news = self.get_object()
+        news.likes.add(request.user)
+        news.dislikes.remove(request.user)
+        return Response({'status': 'liked', 'likes_count': news.likes.count()})
+
+    @action(detail=True, methods=['post'])
+    def dislike(self, request, pk=None):
+        news = self.get_object()
+        news.dislikes.add(request.user)
+        news.likes.remove(request.user)
+        return Response({'status': 'disliked', 'dislikes_count': news.dislikes.count()})
+
+    @action(detail=True, methods=['post'])
+    def add_comment(self, request, pk=None):
+        news = self.get_object()
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            comment = serializer.save(user=request.user, post=news)
+            return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Post.objects.filter(post_type='article', is_published=True)
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return PostCreateSerializer
+        return ArticleSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, post_type='article')
+
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        article = self.get_object()
+        article.likes.add(request.user)
+        article.dislikes.remove(request.user)
+        return Response({'status': 'liked', 'likes_count': article.likes.count()})
+
+    @action(detail=True, methods=['post'])
+    def dislike(self, request, pk=None):
+        article = self.get_object()
+        article.dislikes.add(request.user)
+        article.likes.remove(request.user)
+        return Response({'status': 'disliked', 'dislikes_count': article.dislikes.count()})
+
+    @action(detail=True, methods=['post'])
+    def add_comment(self, request, pk=None):
+        article = self.get_object()
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            comment = serializer.save(user=request.user, post=article)
+            return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Comment.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]  # Только админы могут видеть пользователей
+
+
+# API для управления подписками
+class SubscriptionAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        subscriptions = Subscription.objects.filter(user=request.user)
+        serializer = CategorySerializer([sub.category for sub in subscriptions], many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        category_ids = request.data.get('categories', [])
+        categories = Category.objects.filter(id__in=category_ids)
+
+        # Удаляем старые подписки
+        Subscription.objects.filter(user=request.user).delete()
+
+        # Создаем новые
+        for category in categories:
+            Subscription.objects.create(user=request.user, category=category)
+
+        return Response({'status': 'subscriptions_updated'})
+
+
+# API для получения профиля
+class ProfileAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user_data = UserSerializer(request.user).data
+        subscriptions = Subscription.objects.filter(user=request.user)
+        subscription_data = CategorySerializer([sub.category for sub in subscriptions], many=True).data
+
+        return Response({
+            'user': user_data,
+            'subscriptions': subscription_data,
+            'is_author': request.user.groups.filter(name='authors').exists()
+        })
+
+
+# API для становления автором
+class BecomeAuthorAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        authors_group, _ = Group.objects.get_or_create(name='authors')
+        if not request.user.groups.filter(name='authors').exists():
+            request.user.groups.add(authors_group)
+            request.user.save()
+            return Response({'status': 'became_author'})
+        return Response({'status': 'already_author'})
