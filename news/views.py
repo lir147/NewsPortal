@@ -1,33 +1,38 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.views.decorators.http import require_POST
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View
+from django.views.generic import (ListView, CreateView, UpdateView,
+                                  DeleteView, DetailView, View)
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 import django_filters
 from django_filters.views import FilterView
 from django import forms
-from .models import Post, Comment, Article, Subscription, Category
+from .models import Post, Comment, Subscription, Category
 from .forms import CommentForm, RegisterForm, SubscriptionForm, PostForm
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 import pytz
-from django.http import HttpResponseBadRequest
-from django.http import JsonResponse
-from django.contrib.auth import logout
-from django.shortcuts import redirect
+from django.http import HttpResponseBadRequest, JsonResponse
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import (
-    NewsSerializer, ArticleSerializer, CommentSerializer,
-    CategorySerializer, PostCreateSerializer, UserSerializer
+    ArticleSerializer,
+    CommentSerializer,
+    CategorySerializer,
+    PostSerializer as NewsSerializer,
+    PostSerializer as ArticleSerializer,
+    UserSerializer,
+    PostSerializer,
+    PostCreateUpdateSerializer,
 )
+
 
 def custom_logout(request):
     logout(request)
@@ -39,11 +44,8 @@ def toggle_theme(request):
         request.session['dark_mode'] = True
     else:
         request.session['dark_mode'] = not request.session['dark_mode']
-
-    # Для AJAX-запросов возвращаем JSON
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'dark_mode': request.session['dark_mode']})
-
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
@@ -59,7 +61,6 @@ def set_timezone(request):
     return HttpResponseBadRequest("Invalid timezone")
 
 
-# Фильтрация постов
 class PostFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains', label=_('Название'))
     author__user__username = django_filters.CharFilter(
@@ -73,22 +74,24 @@ class PostFilter(django_filters.FilterSet):
         label=_('После даты'),
         widget=forms.DateInput(attrs={'type': 'date'})
     )
+
     class Meta:
         model = Post
         fields = ['title', 'author__user__username', 'created_at']
 
-# Отписка от категории
+
 @login_required
 def unsubscribe(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
     Subscription.objects.filter(user=request.user, category=category).delete()
     return redirect('manage_subscriptions')
 
+
 @login_required
 def profile_view(request):
     return render(request, 'profile.html')
 
-# Управление подписками
+
 @login_required
 def manage_subscriptions(request):
     user = request.user
@@ -105,13 +108,14 @@ def manage_subscriptions(request):
         form = SubscriptionForm(initial={'categories': initial_cats})
     return render(request, 'subscriptions/manage.html', {'form': form})
 
-# Лайк/дизлайк для статей
+
 @login_required
 @require_POST
 def article_like(request, pk):
     article = get_object_or_404(Post, pk=pk, post_type='article')
     article.like()
     return redirect('article_detail', pk=pk)
+
 
 @login_required
 @require_POST
@@ -120,13 +124,14 @@ def article_dislike(request, pk):
     article.dislike()
     return redirect('article_detail', pk=pk)
 
-# Лайк/дизлайк для новостей
+
 @login_required
 @require_POST
 def news_like(request, pk):
     news = get_object_or_404(Post, pk=pk, post_type='news')
     news.like()
     return redirect('news_detail', pk=pk)
+
 
 @login_required
 @require_POST
@@ -135,7 +140,7 @@ def news_dislike(request, pk):
     news.dislike()
     return redirect('news_detail', pk=pk)
 
-# Стать автором
+
 @login_required
 @require_POST
 def become_author(request):
@@ -145,7 +150,7 @@ def become_author(request):
         request.user.save()
     return redirect('profile')
 
-# Просмотр новости с комментариями
+
 class NewsDetailViewWithComments(View):
     def get(self, request, pk):
         news = get_object_or_404(Post, pk=pk, post_type='news')
@@ -165,7 +170,7 @@ class NewsDetailViewWithComments(View):
         comments = news.comments.all().order_by('-created_at')
         return render(request, 'news/news_detail.html', {'item': news, 'form': form, 'comments': comments})
 
-# Главная новостная страница
+
 @method_decorator(cache_page(60), name='dispatch')
 class NewsListView(ListView):
     model = Post
@@ -176,7 +181,7 @@ class NewsListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news').order_by('-created_at')
 
-# Поиск новостей
+
 class NewsSearchView(FilterView):
     model = Post
     filterset_class = PostFilter
@@ -192,7 +197,7 @@ class NewsSearchView(FilterView):
         context['request'] = self.request
         return context
 
-# Список статей
+
 class ArticlesListView(ListView):
     model = Post
     template_name = 'articles/articles_list.html'
@@ -202,7 +207,7 @@ class ArticlesListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(post_type='article').order_by('-created_at')
 
-# Создание новости
+
 class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -215,7 +220,7 @@ class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
-# Обновление новости
+
 class NewsUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
@@ -226,7 +231,7 @@ class NewsUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
-# Удаление новости
+
 class NewsDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
     template_name = 'news/news_confirm_delete.html'
@@ -236,7 +241,7 @@ class NewsDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     def get_queryset(self):
         return Post.objects.filter(post_type='news')
 
-# Создание статьи
+
 class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -249,7 +254,7 @@ class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         form.instance.created_at = timezone.now()
         return super().form_valid(form)
 
-# Обновление статьи
+
 class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
@@ -260,7 +265,7 @@ class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
-# Просмотр статьи с кэшированием
+
 @method_decorator(cache_page(60 * 5), name='dispatch')
 class ArticleDetailView(DetailView):
     model = Post
@@ -270,7 +275,7 @@ class ArticleDetailView(DetailView):
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
-# Удаление статьи
+
 class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
     template_name = 'articles/article_confirm_delete.html'
@@ -280,7 +285,7 @@ class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
     def get_queryset(self):
         return Post.objects.filter(post_type='article')
 
-# Регистрация пользователя
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -295,10 +300,11 @@ def register(request):
         form = RegisterForm()
     return render(request, "register.html", {"form": form})
 
-# Детальный просмотр поста
+
 class PostDetail(DetailView):
     model = Post
     template_name = 'news/post_detail.html'
+
 
 def csrf_failure(request, reason=""):
     context = {'reason': reason}
@@ -314,32 +320,42 @@ class NewsViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
-            return PostCreateSerializer
-        return NewsSerializer
+            return PostCreateUpdateSerializer  # Исправлено имя
+        return PostSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, post_type='news')
+        serializer.save(author=self.request.user.author, post_type='news')
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
-        news = self.get_object()
-        news.likes.add(request.user)
-        news.dislikes.remove(request.user)
-        return Response({'status': 'liked', 'likes_count': news.likes.count()})
+        post = self.get_object()
+        if request.user in post.dislikes.all():
+            post.dislikes.remove(request.user)
+        post.likes.add(request.user)
+        return Response({
+            'status': 'liked',
+            'likes_count': post.likes.count(),
+            'dislikes_count': post.dislikes.count()
+        })
 
     @action(detail=True, methods=['post'])
     def dislike(self, request, pk=None):
-        news = self.get_object()
-        news.dislikes.add(request.user)
-        news.likes.remove(request.user)
-        return Response({'status': 'disliked', 'dislikes_count': news.dislikes.count()})
+        post = self.get_object()
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+        post.dislikes.add(request.user)
+        return Response({
+            'status': 'disliked',
+            'likes_count': post.likes.count(),
+            'dislikes_count': post.dislikes.count()
+        })
 
     @action(detail=True, methods=['post'])
     def add_comment(self, request, pk=None):
-        news = self.get_object()
+        post = self.get_object()
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            comment = serializer.save(user=request.user, post=news)
+            comment = serializer.save(user=request.user, post=post)
             return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -352,32 +368,42 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
-            return PostCreateSerializer
+            return PostCreateUpdateSerializer
         return ArticleSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, post_type='article')
+        serializer.save(author=self.request.user.author, post_type='article')
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
-        article = self.get_object()
-        article.likes.add(request.user)
-        article.dislikes.remove(request.user)
-        return Response({'status': 'liked', 'likes_count': article.likes.count()})
+        post = self.get_object()
+        if request.user in post.dislikes.all():
+            post.dislikes.remove(request.user)
+        post.likes.add(request.user)
+        return Response({
+            'status': 'liked',
+            'likes_count': post.likes.count(),
+            'dislikes_count': post.dislikes.count()
+        })
 
     @action(detail=True, methods=['post'])
     def dislike(self, request, pk=None):
-        article = self.get_object()
-        article.dislikes.add(request.user)
-        article.likes.remove(request.user)
-        return Response({'status': 'disliked', 'dislikes_count': article.dislikes.count()})
+        post = self.get_object()
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+        post.dislikes.add(request.user)
+        return Response({
+            'status': 'disliked',
+            'likes_count': post.likes.count(),
+            'dislikes_count': post.dislikes.count()
+        })
 
     @action(detail=True, methods=['post'])
     def add_comment(self, request, pk=None):
-        article = self.get_object()
+        post = self.get_object()
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            comment = serializer.save(user=request.user, post=article)
+            comment = serializer.save(user=request.user, post=post)
             return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -402,10 +428,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]  # Только админы могут видеть пользователей
+    permission_classes = [permissions.IsAdminUser]
 
 
-# API для управления подписками
 class SubscriptionAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -417,18 +442,12 @@ class SubscriptionAPIView(APIView):
     def post(self, request):
         category_ids = request.data.get('categories', [])
         categories = Category.objects.filter(id__in=category_ids)
-
-        # Удаляем старые подписки
         Subscription.objects.filter(user=request.user).delete()
-
-        # Создаем новые
         for category in categories:
             Subscription.objects.create(user=request.user, category=category)
-
         return Response({'status': 'subscriptions_updated'})
 
 
-# API для получения профиля
 class ProfileAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -436,7 +455,6 @@ class ProfileAPIView(APIView):
         user_data = UserSerializer(request.user).data
         subscriptions = Subscription.objects.filter(user=request.user)
         subscription_data = CategorySerializer([sub.category for sub in subscriptions], many=True).data
-
         return Response({
             'user': user_data,
             'subscriptions': subscription_data,
@@ -444,7 +462,6 @@ class ProfileAPIView(APIView):
         })
 
 
-# API для становления автором
 class BecomeAuthorAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

@@ -1,26 +1,18 @@
 from rest_framework import serializers
-from .models import News, Article, Category, Comment, AuthorProfile
 from django.contrib.auth.models import User
+from .models import Post, Comment, Category
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email']
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description']
-
-
-class AuthorProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model = AuthorProfile
-        fields = ['id', 'user', 'bio', 'profile_picture', 'is_author']
+        fields = ['id', 'name']
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -28,64 +20,38 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'content', 'created_at', 'rating']
-        read_only_fields = ['created_at']
+        fields = ['id', 'user', 'content', 'created_at']
 
 
-class NewsSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    category = CategorySerializer(read_only=True)
+class PostSerializer(serializers.ModelSerializer):
+    author = UserSerializer(source='author.user', read_only=True)
+    categories = CategorySerializer(many=True, read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-    category_id = serializers.PrimaryKeyRelatedField(
+
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'content', 'author', 'categories', 'comments',
+                  'created_at', 'post_type', 'rating', 'is_published']
+
+
+# Добавляем недостающие сериализаторы
+class NewsSerializer(PostSerializer):
+    class Meta(PostSerializer.Meta):
+        pass
+
+
+class ArticleSerializer(PostSerializer):
+    class Meta(PostSerializer.Meta):
+        pass
+
+
+class PostCreateUpdateSerializer(serializers.ModelSerializer):
+    categories = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
-        source='category',
-        write_only=True
+        many=True,
+        required=False
     )
 
     class Meta:
-        model = News
-        fields = [
-            'id', 'title', 'content', 'author', 'category', 'category_id',
-            'created_at', 'updated_at', 'is_published', 'comments',
-            'likes_count', 'dislikes_count', 'rating'
-        ]
-        read_only_fields = ['created_at', 'updated_at', 'author', 'likes_count', 'dislikes_count', 'rating']
-
-
-class ArticleSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    category = CategorySerializer(read_only=True)
-    comments = CommentSerializer(many=True, read_only=True)
-    category_id = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all(),
-        source='category',
-        write_only=True
-    )
-
-    class Meta:
-        model = Article
-        fields = [
-            'id', 'title', 'content', 'author', 'category', 'category_id',
-            'created_at', 'updated_at', 'is_published', 'comments',
-            'likes_count', 'dislikes_count', 'rating'
-        ]
-        read_only_fields = ['created_at', 'updated_at', 'author', 'likes_count', 'dislikes_count', 'rating']
-
-
-# Сериализаторы для создания/обновления
-class NewsCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = News
-        fields = ['title', 'content', 'category', 'is_published']
-
-
-class ArticleCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Article
-        fields = ['title', 'content', 'category', 'is_published']
-
-
-class CommentCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['content']
+        model = Post
+        fields = ['title', 'content', 'categories', 'post_type', 'is_published']

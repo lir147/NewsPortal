@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 import pytz
 
+
 class TimezoneForm(forms.Form):
     timezone = forms.ChoiceField(
         choices=[(tz, tz) for tz in pytz.all_timezones],
@@ -23,15 +24,18 @@ class SubscriptionForm(forms.Form):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['text']
+        fields = ['content']  # Исправлено: заменено 'Comment' на 'content'
         widgets = {
-            'text': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Ваш комментарий'})
+            'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Ваш комментарий'})
+            # Исправлено: 'Comment' → 'content'
         }
+
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         exclude = ['post_type', 'created_at', 'author']
+
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -52,6 +56,7 @@ class RegisterForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:

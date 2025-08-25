@@ -41,9 +41,17 @@ class Author(models.Model):
         return self.user.username
 
     def update_rating(self):
-        post_rating = sum(post.rating * 3 for post in self.posts.all())
-        comments_rating = sum(comment.rating for comment in Comment.objects.filter(user=self.user))
-        comments_to_posts_rating = sum(comment.rating for post in self.posts.all() for comment in post.comments.all())
+        post_rating = sum(post.rating * 3 for post in self.post_set.all())
+
+        # Используем правильное имя related_name для комментариев пользователя
+        comments_rating = sum(comment.rating for comment in self.user.comment_set.all())
+
+        # Используем правильное имя related_name для комментариев к постам автора
+        comments_to_posts_rating = sum(
+            comment.rating for post in self.post_set.all()
+            for comment in post.comments.all()
+        )
+
         self.rating = post_rating + comments_rating + comments_to_posts_rating
         self.save()
 
@@ -80,9 +88,8 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     rating = models.IntegerField(default=0)
-    is_published = models.BooleanField(default=True)  # Добавлено: статус публикации
+    is_published = models.BooleanField(default=True)
 
-    # Поля для лайков/дизлайков
     likes = models.ManyToManyField(User, related_name='post_likes', blank=True)
     dislikes = models.ManyToManyField(User, related_name='post_dislikes', blank=True)
 
@@ -131,12 +138,10 @@ class PostCategory(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.TextField()
-    content = models.TextField()  # Добавлено: дублирует text для совместимости
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(default=0)
 
-    # Поля для лайков/дизлайков комментариев
     likes = models.ManyToManyField(User, related_name='comment_likes', blank=True)
     dislikes = models.ManyToManyField(User, related_name='comment_dislikes', blank=True)
 
@@ -149,7 +154,7 @@ class Comment(models.Model):
         return self.dislikes.count()
 
     def __str__(self):
-        return (self.text[:50] + '...') if len(self.text) > 50 else self.text
+        return (self.content[:50] + '...') if len(self.content) > 50 else self.content
 
     def like(self):
         self.rating += 1
@@ -158,12 +163,3 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
-
-    def save(self, *args, **kwargs):
-        # Синхронизируем text и content
-        if not self.text and self.content:
-            self.text = self.content
-        elif not self.content and self.text:
-            self.content = self.text
-        super().save(*args, **kwargs)
-
